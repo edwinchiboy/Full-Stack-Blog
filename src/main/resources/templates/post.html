@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Post - Web3 Blog</title>
+    <meta id="pageDescription" name="description" content="">
+    <meta id="pageKeywords" name="keywords" content="">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="header-content">
+            <a href="index.html" class="logo">Web3 Blog</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html">All Posts</a></li>
+                    <li><a href="#">Announcements</a></li>
+                    <li><a href="#">Guides</a></li>
+                    <li><a href="#">Events</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons" id="authButtons">
+                <a href="login.html" class="btn btn-secondary">Login</a>
+                <a href="register.html" class="btn btn-primary">Register</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading post...</p>
+        </div>
+
+        <article id="postContent" class="hidden">
+            <div class="card">
+                <div class="card-header">
+                    <h1 id="postTitle" class="card-title"></h1>
+                    <div id="postMeta" class="card-meta">
+                        <!-- Post metadata will be inserted here -->
+                    </div>
+                    <div id="postCategory"></div>
+                </div>
+
+                <div id="postImage" class="hidden">
+                    <img id="featuredImage" src="" alt="" style="width: 100%; height: 300px; object-fit: cover; border-radius: 10px; margin-bottom: 2rem;">
+                </div>
+
+                <div id="postBody" class="card-content">
+                    <!-- Post content will be inserted here -->
+                </div>
+
+                <div id="postTags" class="tags">
+                    <!-- Tags will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Social Sharing -->
+            <div class="social-share">
+                <h4>Share this post</h4>
+                <div class="social-buttons">
+                    <a id="twitterShare" href="#" class="social-btn twitter" target="_blank">Share on Twitter</a>
+                    <a id="linkedinShare" href="#" class="social-btn linkedin" target="_blank">Share on LinkedIn</a>
+                    <a id="telegramShare" href="#" class="social-btn telegram" target="_blank">Share on Telegram</a>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="comments-section">
+                <h3>Comments</h3>
+
+                <!-- Comment Form (for authenticated users) -->
+                <div id="commentForm" class="hidden">
+                    <form id="submitComment">
+                        <div class="form-group">
+                            <label for="commentContent">Add a comment:</label>
+                            <textarea id="commentContent" class="form-control" rows="4" required placeholder="Share your thoughts..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
+                    </form>
+                </div>
+
+                <!-- Login prompt for non-authenticated users -->
+                <div id="loginPrompt">
+                    <p><a href="login.html">Login</a> to leave a comment.</p>
+                </div>
+
+                <!-- Comments List -->
+                <div id="commentsList">
+                    <!-- Comments will be loaded here -->
+                </div>
+
+                <!-- Load More Comments -->
+                <div id="loadMoreComments" class="text-center mt-3 hidden">
+                    <button class="btn btn-secondary" onclick="loadMoreComments()">Load More Comments</button>
+                </div>
+            </div>
+        </article>
+
+        <!-- Related Posts -->
+        <section id="relatedPosts" class="hidden">
+            <h3>Related Posts</h3>
+            <div id="relatedPostsContainer" class="posts-grid">
+                <!-- Related posts will be loaded here -->
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <p>&copy; 2025 Web3 Blog. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    const API_BASE = 'http://localhost:8080/api';
+    let currentPost = null;
+    let currentCommentsPage = 0;
+
+    // Get post slug from URL
+    function getPostSlug() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('slug');
+    }
+
+    // Check authentication status
+    function checkAuth() {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        const authButtons = document.getElementById('authButtons');
+        const commentForm = document.getElementById('commentForm');
+        const loginPrompt = document.getElementById('loginPrompt');
+
+        if (token && user.username) {
+            authButtons.innerHTML = `
+                <span>Welcome, ${user.username}</span>
+                ${user.roles && user.roles.includes('ROLE_ADMIN') ?
+                    '<a href="dashboard.html" class="btn btn-primary">Dashboard</a>' : ''}
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            `;
+            commentForm.classList.remove('hidden');
+            loginPrompt.classList.add('hidden');
+        } else {
+            loginPrompt.classList.remove('hidden');
+            commentForm.classList.add('hidden');
+        }
+    }
+
+    // Logout function
+    function logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        location.reload();
+    }
+
+    // Load post by slug
+    async function loadPost(slug) {
+        const loading = document.getElementById('loading');
+        const postContent = document.getElementById('postContent');
+
+        try {
+            const response = await fetch(`${API_BASE}/posts/slug/${slug}`);
+
+            if (!response.ok) {
+                throw new Error('Post not found');
+            }
+
+            const post = await response.json();
+            currentPost = post;
+
+            displayPost(post);
+            setupSocialSharing(post);
+            loadComments(post.id);
+
+            loading.classList.add('hidden');
+            postContent.classList.remove('hidden');
+
+        } catch (error) {
+            console.error('Error loading post:', error);
+            loading.innerHTML = '<p class="text-center">Post not found or error loading post.</p>';
+        }
+    }
+
+    // Display post
+    function displayPost(post) {
+        // Update page title and meta
+        document.title = `${post.title} - Web3 Blog`;
+        document.getElementById('pageTitle').content = post.title;
+
+        if (post.metaDescription) {
+            document.getElementById('pageDescription').content = post.metaDescription;
+        }
+
+        if (post.metaKeywords) {
+            document.getElementById('pageKeywords').content = post.metaKeywords;
+        }
+
+        // Display post content
+        document.getElementById('postTitle').textContent = post.title;
+
+        document.getElementById('postMeta').innerHTML = `
+            <span>By ${post.author?.username || 'Admin'}</span>
+            <span>${formatDate(post.publishedAt || post.createdAt)}</span>
+            <span>${formatDate(post.updatedAt)} (Updated)</span>
+        `;
+
+        if (post.category) {
+            document.getElementById('postCategory').innerHTML = `
+                <span class="category">${post.category.name}</span>
+            `;
+        }
+
+        if (post.featuredImage) {
+            document.getElementById('postImage').classList.remove('hidden');
+            document.getElementById('featuredImage').src = post.featuredImage;
+            document.getElementById('featuredImage').alt = post.title;
+        }
+
+        document.getElementById('postBody').innerHTML = formatPostContent(post.content);
+
+        if (post.tags && post.tags.length > 0) {
+            document.getElementById('postTags').innerHTML = post.tags.map(tag =>
+                `<span class="tag">${tag.name}</span>`
+            ).join('');
+        }
+    }
+
+    // Setup social sharing
+    function setupSocialSharing(post) {
+        const currentUrl = window.location.href;
+        const title = encodeURIComponent(post.title);
+        const description = encodeURIComponent(post.excerpt || post.title);
+
+        document.getElementById('twitterShare').href =
+            `https://twitter.com/intent/tweet?text=${title}&url=${encodeURIComponent(currentUrl)}`;
+
+        document.getElementById('linkedinShare').href =
+            `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`;
+
+        document.getElementById('telegramShare').href =
+            `https://t.me/share/url?url=${encodeURIComponent(currentUrl)}&text=${title}`;
+    }
+
+    // Load comments
+    async function loadComments(postId, page = 0) {
+        try {
+            const response = await fetch(`${API_BASE}/comments/post/${postId}?page=${page}&size=10`);
+            const data = await response.json();
+
+            const container = document.getElementById('commentsList');
+
+            if (page === 0) {
+                container.innerHTML = '';
+            }
+
+            if (data.content && data.content.length > 0) {
+                data.content.forEach(comment => {
+                    const commentDiv = document.createElement('div');
+                    commentDiv.className = 'comment fade-in';
+                    commentDiv.innerHTML = `
+                        <div class="comment-header">
+                            <div class="comment-author">${comment.user.username}</div>
+                            <div class="comment-date">${formatDate(comment.createdAt)}</div>
+                            ${isAdmin() ? `<button onclick="deleteComment(${comment.id})" class="btn btn-danger" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;">Delete</button>` : ''}
+                        </div>
+                        <div class="comment-content">${formatCommentContent(comment.content)}</div>
+                    `;
+                    container.appendChild(commentDiv);
+                });
+            }
+
+            // Show/hide load more button
+            const loadMoreBtn = document.getElementById('loadMoreComments');
+            if (!data.last && data.content.length > 0) {
+                loadMoreBtn.classList.remove('hidden');
+                currentCommentsPage = page;
+            } else {
+                loadMoreBtn.classList.add('hidden');
+            }
+
+        } catch (error) {
+            console.error('Error loading comments:', error);
+        }
+    }
+
+    // Load more comments
+    function loadMoreComments() {
+        if (currentPost) {
+            loadComments(currentPost.id, currentCommentsPage + 1);
+        }
+    }
+
+    // Submit comment
+    async function submitComment(event) {
+        event.preventDefault();
+
+        const content = document.getElementById('commentContent').value.trim();
+        if (!content || !currentPost) return;
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Please login to comment');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE}/comments/post/${currentPost.id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ content })
+            });
+
+            if (response.ok) {
+                document.getElementById('commentContent').value = '';
+                // Reload comments to show the new one
+                loadComments(currentPost.id);
+            } else {
+                const error = await response.json();
+                alert(error.message || 'Failed to post comment');
+            }
+        } catch (error) {
+            console.error('Error posting comment:', error);
+            alert('Failed to post comment');
+        }
+    }
+
+    // Delete comment (admin only)
+    async function deleteComment(commentId) {
+        if (!confirm('Are you sure you want to delete this comment?')) return;
+
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        try {
+            const response = await fetch(`${API_BASE}/comments/${commentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                // Reload comments
+                loadComments(currentPost.id);
+            } else {
+                alert('Failed to delete comment');
+            }
+        } catch (error) {
+            console.error('Error deleting comment:', error);
+            alert('Failed to delete comment');
+        }
+    }
+
+    // Check if user is admin
+    function isAdmin() {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        return user.roles && user.roles.includes('ROLE_ADMIN');
+    }
+
+    // Format post content
+    function formatPostContent(content) {
+        // Simple formatting - convert line breaks to paragraphs
+        return content
+            .split('\n\n')
+            .map(paragraph => paragraph.trim())
+            .filter(paragraph => paragraph.length > 0)
+            .map(paragraph => `<p>${paragraph.replace(/\n/g, '<br>')}</p>`)
+            .join('');
+    }
+
+    // Format comment content
+    function formatCommentContent(content) {
+        return content.replace(/\n/g, '<br>');
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    // Event listeners
+    document.getElementById('submitComment').addEventListener('submit', submitComment);
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        const slug = getPostSlug();
+        if (slug) {
+            checkAuth();
+            loadPost(slug);
+        } else {
+            document.getElementById('loading').innerHTML = '<p class="text-center">Post not found.</p>';
+        }
+    });
+</script>
+</body>
+</html>
