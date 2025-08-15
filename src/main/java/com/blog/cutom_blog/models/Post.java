@@ -1,9 +1,13 @@
 package com.blog.cutom_blog.models;
 
 
+import com.blog.cutom_blog.constants.PostStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,6 +19,8 @@ import java.util.Set;
 @Entity
 @Table(name = "posts")
 @EntityListeners(AuditingEntityListener.class)
+@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,136 +88,7 @@ public class Post {
         this.category = category;
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public String getTitle() {
-        return title;
-    }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getExcerpt() {
-        return excerpt;
-    }
-
-    public void setExcerpt(String excerpt) {
-        this.excerpt = excerpt;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public String getMetaDescription() {
-        return metaDescription;
-    }
-
-    public void setMetaDescription(String metaDescription) {
-        this.metaDescription = metaDescription;
-    }
-
-    public String getMetaKeywords() {
-        return metaKeywords;
-    }
-
-    public void setMetaKeywords(String metaKeywords) {
-        this.metaKeywords = metaKeywords;
-    }
-
-    public String getFeaturedImage() {
-        return featuredImage;
-    }
-
-    public void setFeaturedImage(String featuredImage) {
-        this.featuredImage = featuredImage;
-    }
-
-    public PostStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(PostStatus status) {
-        this.status = status;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public Set<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<Tag> tags) {
-        this.tags = tags;
-    }
-
-    public Set<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(Set<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public LocalDateTime getPublishedAt() {
-        return publishedAt;
-    }
-
-    public void setPublishedAt(LocalDateTime publishedAt) {
-        this.publishedAt = publishedAt;
-    }
-
-    public enum PostStatus {
-        DRAFT, PUBLISHED, ARCHIVED
-    }
 }
