@@ -1,8 +1,5 @@
 package com.blog.cutom_blog.config.security_configuration;
 
-import com.blog.cutom_blog.config.security_configuration.AuthEntryPointJwt;
-import com.blog.cutom_blog.config.security_configuration.AuthTokenFilter;
-import com.blog.cutom_blog.config.security_configuration.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +8,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +25,7 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
@@ -57,26 +55,36 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
-            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            .authorizeHttpRequests()
-            .requestMatchers("/api/auth/**").permitAll()
-            .requestMatchers("/api/posts/**").permitAll()
-            .requestMatchers("/api/categories/**").permitAll()
-            .requestMatchers("/api/tags/**").permitAll()
-            .requestMatchers("/api/subscribers/**").permitAll()
-            .requestMatchers("/api/admin/**").hasRole("ADMIN")
-            .anyRequest().authenticated();
+        http
+            // Updated CORS syntax
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // Updated CSRF disable syntax
+            .csrf(AbstractHttpConfigurer::disable)
+            // Exception handling
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
+            // Stateless session
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // Authorization rules
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/posts/**").permitAll()
+                .requestMatchers("/api/categories/**").permitAll()
+                .requestMatchers("/api/tags/**").permitAll()
+                .requestMatchers("/api/subscribers/**").permitAll()
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            );
 
+        // Custom authentication provider
         http.authenticationProvider(authenticationProvider());
+        // JWT filter
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
