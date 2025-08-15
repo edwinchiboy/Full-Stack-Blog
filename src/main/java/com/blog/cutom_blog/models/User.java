@@ -51,13 +51,8 @@ public class User {
     @JoinTable(name = "user_roles",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
+    private Role role;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private Set<Post> posts = new HashSet<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Comment> comments = new HashSet<>();
 
     @CreatedDate
     @Column(updatable = false)

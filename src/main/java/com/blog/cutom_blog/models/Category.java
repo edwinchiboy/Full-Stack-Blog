@@ -13,8 +13,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+
 
 @Entity
 @Table(name = "categories")
@@ -37,9 +36,6 @@ public class Category {
     @Size(max = 100)
     @Column(unique = true)
     private String slug;
-
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private Set<Post> posts = new HashSet<>();
 
     @CreatedDate
     @Column(updatable = false)

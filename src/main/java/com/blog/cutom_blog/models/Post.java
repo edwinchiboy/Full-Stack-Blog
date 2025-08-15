@@ -37,9 +37,6 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Size(max = 200)
-    private String slug;
-
     @Size(max = 500)
     private String metaDescription;
 
@@ -54,20 +51,17 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
-    private User author;
+    private User authorId;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id")
-    private Category category;
+
+    private String categoryId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "post_tags",
         joinColumns = @JoinColumn(name = "post_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<Tag> tags = new HashSet<>();
+    private Set<String> tagId ;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private Set<Comment> comments = new HashSet<>();
 
     @CreatedDate
     @Column(updatable = false)
