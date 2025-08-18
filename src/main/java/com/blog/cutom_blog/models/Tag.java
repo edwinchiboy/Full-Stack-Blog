@@ -4,27 +4,18 @@ package com.blog.cutom_blog.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.*;
+
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "tags")
-@EntityListeners(AuditingEntityListener.class)
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Tag {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@EqualsAndHashCode(callSuper = true)
+public class Tag extends Audit{
     @NotBlank
     @Size(max = 50)
     @Column(unique = true)
@@ -38,19 +29,20 @@ public class Tag {
     private String slug;
 
     @ManyToMany(mappedBy = "tags")
-    private Set<Post> posts = new HashSet<>();
+    private Set<String> postId;
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-
-    public Tag(String name, String slug) {
+    @Builder
+    public Tag(final String id,
+               final String name,
+               final String description,
+               final String slug,
+               final Set<String> postId,
+               final LocalDateTime createdAt,
+               final LocalDateTime updatedAt) {
+        super(id,createdAt,updatedAt);
         this.name = name;
+        this.description = description;
         this.slug = slug;
+        this.postId = postId;
     }
-
 }

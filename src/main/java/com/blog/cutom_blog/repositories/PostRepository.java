@@ -13,12 +13,13 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
+    Optional<Post> findById(String id);
 
     Page<Post> findByStatus(Post.PostStatus status, Pageable pageable);
 
-    Page<Post> findByStatusAndCategoryId(Post.PostStatus status, Long categoryId, Pageable pageable);
+    Page<Post> findByStatusAndCategoryId(Post.PostStatus status, String categoryId, Pageable pageable);
 
-    Page<Post> findByStatusAndTagsId(Post.PostStatus status, Long tagId, Pageable pageable);
+    Page<Post> findByStatusAndTagsId(Post.PostStatus status, String tagId, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.status = :status AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%)")
     Page<Post> findByStatusAndTitleContainingOrContentContaining(@Param("status") Post.PostStatus status,
@@ -29,7 +30,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Boolean existsBySlug(String slug);
 
-    Page<Post> findByAuthorId(Long authorId, Pageable pageable);
+    Page<Post> findByAuthorId(String authorId, Pageable pageable);
 
     @Query("SELECT COUNT(p) FROM Post p WHERE p.status = :status")
     Long countByStatus(@Param("status") Post.PostStatus status);

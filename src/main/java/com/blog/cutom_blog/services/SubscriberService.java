@@ -23,13 +23,16 @@ public class SubscriberService {
             throw new RuntimeException("Email already subscribed");
         }
 
-        Subscriber subscriber = new Subscriber(email);
+        Subscriber subscriber = Subscriber.builder()
+            .active(false)
+            .email(email)
+            .build();
+
         return subscriberRepository.save(subscriber);
     }
 
     public void unsubscribe(String email) {
-        Subscriber subscriber = subscriberRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("Subscriber not found"));
+        Subscriber subscriber = subscriberRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Subscriber not found"));
 
         subscriber.setActive(false);
         subscriberRepository.save(subscriber);

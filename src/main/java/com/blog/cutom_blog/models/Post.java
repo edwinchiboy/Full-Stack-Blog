@@ -1,30 +1,20 @@
 package com.blog.cutom_blog.models;
 
 
-import com.blog.cutom_blog.constants.PostStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "posts")
-@EntityListeners(AuditingEntityListener.class)
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@EqualsAndHashCode(callSuper = true)
+public class Post extends Audit {
 
     @NotBlank
     @Size(max = 200)
@@ -51,8 +41,7 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
-    private User authorId;
-
+    private String authorId;
 
     private String categoryId;
 
@@ -60,29 +49,50 @@ public class Post {
     @JoinTable(name = "post_tags",
         joinColumns = @JoinColumn(name = "post_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<String> tagId ;
-
-
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    private Set<String> tagId;
 
     private LocalDateTime publishedAt;
 
-    // Constructors
-    public Post() {}
 
-    public Post(String title, String content, User author, Category category) {
+    public Post(String title, String content, String authorId, String categoryId) {
         this.title = title;
         this.content = content;
-        this.author = author;
-        this.category = category;
+        this.authorId = authorId;
+        this.categoryId = categoryId;
     }
 
+    @Builder
+    public Post(final String id,
+                final String title,
+                final String excerpt,
+                final String content,
+                final String metaDescription,
+                final String metaKeywords,
+                final String featuredImage,
+                final PostStatus status,
+                final String authorId,
+                final String categoryId,
+                final Set<String> tagId,
+                final LocalDateTime createdAt,
+                final LocalDateTime updatedAt,
+                final LocalDateTime publishedAt) {
+        super(id, createdAt, updatedAt);
+        this.title = title;
+        this.excerpt = excerpt;
+        this.content = content;
+        this.metaDescription = metaDescription;
+        this.metaKeywords = metaKeywords;
+        this.featuredImage = featuredImage;
+        this.status = status;
+        this.authorId = authorId;
+        this.categoryId = categoryId;
+        this.tagId = tagId;
+        this.publishedAt = publishedAt;
+    }
 
+    public enum PostStatus {
+        DRAFT, PUBLISHED, ARCHIVED
+    }
 
 
 }

@@ -4,25 +4,17 @@ package com.blog.cutom_blog.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.*;
+
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
-@EntityListeners(AuditingEntityListener.class)
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@EqualsAndHashCode(callSuper = true)
+public class Comment extends Audit {
     @NotBlank
     @Size(max = 1000)
     @Column(columnDefinition = "TEXT")
@@ -36,12 +28,16 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private String postId;
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-
+    @Builder
+    public Comment(final String id,
+                   final String content,
+                   final String authorId,
+                   final String postId,
+                   final LocalDateTime createdAt,
+                   final LocalDateTime updatedAt) {
+        super(id, createdAt, updatedAt);
+        this.content = content;
+        this.authorId = authorId;
+        this.postId = postId;
+    }
 }

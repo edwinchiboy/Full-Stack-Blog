@@ -1,4 +1,4 @@
-package com.blog.cutom_blog.config.utils;
+package com.blog.cutom_blog.config.security_configuration;
 
 
 import io.jsonwebtoken.*;

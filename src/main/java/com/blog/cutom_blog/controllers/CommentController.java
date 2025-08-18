@@ -1,7 +1,6 @@
 package com.blog.cutom_blog.controllers;
 
 
-import com.blog.cutom_blog.controllers.AuthController.MessageResponse;
 import com.blog.cutom_blog.dtos.CommentRequest;
 import com.blog.cutom_blog.models.Comment;
 import com.blog.cutom_blog.services.CommentService;
@@ -23,7 +22,7 @@ public class CommentController {
 
     @GetMapping("/post/{postId}")
     public ResponseEntity<Page<Comment>> getCommentsByPost(
-        @PathVariable Long postId,
+        @PathVariable String postId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size) {
         Page<Comment> comments = commentService.getCommentsByPost(postId, page, size);
@@ -47,7 +46,7 @@ public class CommentController {
     }
 
     @GetMapping("/post/{postId}/count")
-    public ResponseEntity<Long> getCommentCount(@PathVariable Long postId) {
+    public ResponseEntity<Long> getCommentCount(@PathVariable String postId) {
         Long count = commentService.getCommentCountByPost(postId);
         return ResponseEntity.ok(count);
     }

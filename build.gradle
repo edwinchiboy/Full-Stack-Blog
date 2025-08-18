@@ -36,6 +36,9 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.flywaydb:flyway-core:11.11.1'
 	implementation 'org.flywaydb:flyway-database-postgresql:11.11.1'
+	
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 
 
 

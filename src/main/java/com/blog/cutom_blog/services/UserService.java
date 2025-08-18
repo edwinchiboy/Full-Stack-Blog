@@ -27,38 +27,18 @@ public class UserService {
     PasswordEncoder encoder;
 
     public User createUser(SignupRequest signUpRequest) {
-        // Create new user's account
-        User user = new User(signUpRequest.getUsername(),
-            signUpRequest.getEmail(),
-            encoder.encode(signUpRequest.getPassword()));
+        User user = User.builder()
+            .username(signUpRequest.getUsername())
+            .firstName(signUpRequest.getFirstName())
+            .lastName(signUpRequest.getLastName())
+            .email(signUpRequest.getEmail())
+            .password(encoder.encode(signUpRequest.getPassword()))
+            .build();
 
-        user.setFirstName(signUpRequest.getFirstName());
-        user.setLastName(signUpRequest.getLastName());
+        Role userRole = roleRepository.findByName(signUpRequest.getRole())
+            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 
-        Set<String> strRoles = signUpRequest.getRole();
-        Set<Role> roles = new HashSet<>();
-
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_READER)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_READER)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
-        }
-
-        user.setRoles(roles);
+        user.setRoleId(userRole.getId());
         return userRepository.save(user);
     }
 

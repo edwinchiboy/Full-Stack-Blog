@@ -1,30 +1,20 @@
 package com.blog.cutom_blog.models;
 
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.*;
+
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users")
-@EntityListeners(AuditingEntityListener.class)
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+public class User extends Audit {
 
     @NotBlank
     @Size(max = 50)
@@ -47,27 +37,24 @@ public class User {
     @Size(max = 100)
     private String lastName;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Role role;
+    private String roleId;
 
-
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-    // Constructors
-    public User() {}
-
-    public User(String username, String email, String password) {
+    @Builder
+    public User(final String id,
+                final String username,
+                final String email,
+                final String password,
+                final String firstName,
+                final String lastName,
+                final String roleId,
+                final LocalDateTime createdAt,
+                final LocalDateTime updatedAt) {
+        super(id, createdAt, updatedAt);
         this.username = username;
         this.email = email;
         this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.roleId = roleId;
     }
-
 }

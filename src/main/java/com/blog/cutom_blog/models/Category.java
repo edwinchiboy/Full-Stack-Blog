@@ -5,25 +5,16 @@ package com.blog.cutom_blog.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
+import lombok.*;
 import java.time.LocalDateTime;
 
 
 @Entity
 @Table(name = "categories")
-@EntityListeners(AuditingEntityListener.class)
 @Data
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+public class Category extends Audit{
 
     @NotBlank
     @Size(max = 100)
@@ -37,12 +28,19 @@ public class Category {
     @Column(unique = true)
     private String slug;
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
+    @Builder
+    public Category(final String id,
+                    final String name,
+                    final String description,
+                    final String slug,
+                    final LocalDateTime createdAt,
+                    final LocalDateTime updatedAt) {
+        super(id,createdAt,updatedAt);
+        this.name = name;
+        this.description = description;
+        this.slug = slug;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    }
 
 
 }

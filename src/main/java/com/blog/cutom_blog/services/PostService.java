@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -42,12 +43,12 @@ public class PostService {
         return postRepository.findByStatus(Post.PostStatus.PUBLISHED, pageable);
     }
 
-    public Page<Post> getPostsByCategory(Long categoryId, int page, int size) {
+    public Page<Post> getPostsByCategory(String categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
         return postRepository.findByStatusAndCategoryId(Post.PostStatus.PUBLISHED, categoryId, pageable);
     }
 
-    public Page<Post> getPostsByTag(Long tagId, int page, int size) {
+    public Page<Post> getPostsByTag(String tagId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
         return postRepository.findByStatusAndTagsId(Post.PostStatus.PUBLISHED, tagId, pageable);
     }
@@ -62,7 +63,7 @@ public class PostService {
         return postRepository.findBySlug(slug);
     }
 
-    public Optional<Post> getPostById(Long id) {
+    public Optional<Post> getPostById(String id) {
         return postRepository.findById(id);
     }
 
@@ -77,36 +78,32 @@ public class PostService {
         post.setMetaDescription(postRequest.getMetaDescription());
         post.setMetaKeywords(postRequest.getMetaKeywords());
         post.setFeaturedImage(postRequest.getFeaturedImage());
-        post.setAuthor(author);
+        post.setAuthorId(author.getId());
 
-        // Generate slug from title
-        post.setSlug(generateSlug(postRequest.getTitle()));
-
-        // Set status
         post.setStatus(Post.PostStatus.valueOf(postRequest.getStatus().toUpperCase()));
         if (post.getStatus() == Post.PostStatus.PUBLISHED) {
             post.setPublishedAt(LocalDateTime.now());
         }
 
-        // Set category
         if (postRequest.getCategoryId() != null) {
             Category category = categoryRepository.findById(postRequest.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-            post.setCategory(category);
+            post.setCategoryId(category.getId());
         }
 
-        // Set tags
         if (postRequest.getTags() != null && !postRequest.getTags().isEmpty()) {
-            Set<Tag> tags = new HashSet<>();
-            for (String tagName : postRequest.getTags()) {
+            Set<String> tagsId = postRequest.getTags().stream().map(tagName -> {
                 Tag tag = tagRepository.findByName(tagName)
                     .orElseGet(() -> {
-                        Tag newTag = new Tag(tagName, generateSlug(tagName));
+                        Tag newTag = Tag.builder()
+                            .name(tagName)
+                            .slug(generateSlug(tagName))
+                            .build();
                         return tagRepository.save(newTag);
                     });
-                tags.add(tag);
-            }
-            post.setTags(tags);
+                return tag.getId();
+            }).collect(Collectors.toSet());
+            post.setTagId(tagsId);
         }
 
         return postRepository.save(post);
@@ -123,12 +120,7 @@ public class PostService {
         post.setMetaKeywords(postRequest.getMetaKeywords());
         post.setFeaturedImage(postRequest.getFeaturedImage());
 
-        // Update slug if title changed
-        if (!post.getTitle().equals(postRequest.getTitle())) {
-            post.setSlug(generateSlug(postRequest.getTitle()));
-        }
 
-        // Update status
         Post.PostStatus newStatus = Post.PostStatus.valueOf(postRequest.getStatus().toUpperCase());
         if (post.getStatus() != newStatus) {
             post.setStatus(newStatus);
@@ -137,25 +129,25 @@ public class PostService {
             }
         }
 
-        // Update category
         if (postRequest.getCategoryId() != null) {
             Category category = categoryRepository.findById(postRequest.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-            post.setCategory(category);
+            post.setCategoryId(category.getId());
         }
 
-        // Update tags
-        if (postRequest.getTags() != null) {
-            Set<Tag> tags = new HashSet<>();
-            for (String tagName : postRequest.getTags()) {
+        if (postRequest.getTags() != null && !postRequest.getTags().isEmpty()) {
+            Set<String> tagsId = postRequest.getTags().stream().map(tagName -> {
                 Tag tag = tagRepository.findByName(tagName)
                     .orElseGet(() -> {
-                        Tag newTag = new Tag(tagName, generateSlug(tagName));
+                        Tag newTag = Tag.builder()
+                            .name(tagName)
+                            .slug(generateSlug(tagName))
+                            .build();
                         return tagRepository.save(newTag);
                     });
-                tags.add(tag);
-            }
-            post.setTags(tags);
+                return tag.getId();
+            }).collect(Collectors.toSet());
+            post.setTagId(tagsId);
         }
 
         return postRepository.save(post);
