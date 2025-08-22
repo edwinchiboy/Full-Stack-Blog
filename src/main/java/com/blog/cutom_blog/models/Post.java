@@ -39,27 +39,17 @@ public class Post extends Audit {
     @Enumerated(EnumType.STRING)
     private PostStatus status = PostStatus.DRAFT;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
+
     private String authorId;
 
     private String categoryId;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "post_tags",
-        joinColumns = @JoinColumn(name = "post_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<String> tagId;
 
     private LocalDateTime publishedAt;
 
+    private  String slug;
 
-    public Post(String title, String content, String authorId, String categoryId) {
-        this.title = title;
-        this.content = content;
-        this.authorId = authorId;
-        this.categoryId = categoryId;
-    }
 
     @Builder
     public Post(final String id,
@@ -75,7 +65,7 @@ public class Post extends Audit {
                 final Set<String> tagId,
                 final LocalDateTime createdAt,
                 final LocalDateTime updatedAt,
-                final LocalDateTime publishedAt) {
+                final LocalDateTime publishedAt, final String slug) {
         super(id, createdAt, updatedAt);
         this.title = title;
         this.excerpt = excerpt;
@@ -88,6 +78,7 @@ public class Post extends Audit {
         this.categoryId = categoryId;
         this.tagId = tagId;
         this.publishedAt = publishedAt;
+        this.slug = slug;
     }
 
     public enum PostStatus {

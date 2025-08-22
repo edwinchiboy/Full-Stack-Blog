@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,7 +49,7 @@ public class PostService {
 
     public Page<Post> getPostsByTag(String tagId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
-        return postRepository.findByStatusAndTagsId(Post.PostStatus.PUBLISHED, tagId, pageable);
+        return postRepository.findByStatusAndTagId(Post.PostStatus.PUBLISHED, tagId, pageable);
     }
 
     public Page<Post> searchPosts(String keyword, int page, int size) {

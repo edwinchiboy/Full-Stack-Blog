@@ -21,14 +21,12 @@ public class Tag extends Audit{
     @Column(unique = true)
     private String name;
 
-    @Size(max = 200)
+    @Size(max = 500)
     private String description;
 
-    @Size(max = 50)
-    @Column(unique = true)
+
     private String slug;
 
-    @ManyToMany(mappedBy = "tags")
     private Set<String> postId;
 
     @Builder

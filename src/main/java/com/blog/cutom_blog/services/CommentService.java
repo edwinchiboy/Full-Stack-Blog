@@ -60,6 +60,6 @@ public class CommentService {
             .orElseThrow(() -> new RuntimeException("User not found"));
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return commentRepository.findByUserId(user.getId(), pageable);
+        return commentRepository.findByAuthorId(user.getId(), pageable);
     }
 }

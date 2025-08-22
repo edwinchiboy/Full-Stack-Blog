@@ -25,7 +25,6 @@ public class Category extends Audit{
     private String description;
 
     @Size(max = 100)
-    @Column(unique = true)
     private String slug;
 
     @Builder

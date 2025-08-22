@@ -16,16 +16,10 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 public class Comment extends Audit {
     @NotBlank
-    @Size(max = 1000)
-    @Column(columnDefinition = "TEXT")
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
     private String authorId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
     private String postId;
 
     @Builder

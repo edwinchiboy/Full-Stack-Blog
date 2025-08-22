@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 public class Role extends Audit {
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
     private ERole name;
 
     @Builder
