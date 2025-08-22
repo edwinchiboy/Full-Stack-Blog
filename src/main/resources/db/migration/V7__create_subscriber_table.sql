@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS  subscribers (
+    id VARCHAR(255) PRIMARY KEY,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    active BOOLEAN DEFAULT TRUE
+);

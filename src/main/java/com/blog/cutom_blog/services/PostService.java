@@ -47,10 +47,10 @@ public class PostService {
         return postRepository.findByStatusAndCategoryId(Post.PostStatus.PUBLISHED, categoryId, pageable);
     }
 
-    public Page<Post> getPostsByTag(String tagId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
-        return postRepository.findByStatusAndTagId(Post.PostStatus.PUBLISHED, tagId, pageable);
-    }
+//    public Page<Post> getPostsByTag(String tagId, int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
+//        return postRepository.findByStatusAndTagId(Post.PostStatus.PUBLISHED, tagId, pageable);
+//    }
 
     public Page<Post> searchPosts(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
@@ -90,20 +90,20 @@ public class PostService {
             post.setCategoryId(category.getId());
         }
 
-        if (postRequest.getTags() != null && !postRequest.getTags().isEmpty()) {
-            Set<String> tagsId = postRequest.getTags().stream().map(tagName -> {
-                Tag tag = tagRepository.findByName(tagName)
-                    .orElseGet(() -> {
-                        Tag newTag = Tag.builder()
-                            .name(tagName)
-                            .slug(generateSlug(tagName))
-                            .build();
-                        return tagRepository.save(newTag);
-                    });
-                return tag.getId();
-            }).collect(Collectors.toSet());
-            post.setTagId(tagsId);
-        }
+//        if (postRequest.getTags() != null && !postRequest.getTags().isEmpty()) {
+//            Set<String> tagsId = postRequest.getTags().stream().map(tagName -> {
+//                Tag tag = tagRepository.findByName(tagName)
+//                    .orElseGet(() -> {
+//                        Tag newTag = Tag.builder()
+//                            .name(tagName)
+//                            .slug(generateSlug(tagName))
+//                            .build();
+//                        return tagRepository.save(newTag);
+//                    });
+//                return tag.getId();
+//            }).collect(Collectors.toSet());
+////            post.setTagId(tagsId);
+//        }
 
         return postRepository.save(post);
     }
@@ -134,20 +134,20 @@ public class PostService {
             post.setCategoryId(category.getId());
         }
 
-        if (postRequest.getTags() != null && !postRequest.getTags().isEmpty()) {
-            Set<String> tagsId = postRequest.getTags().stream().map(tagName -> {
-                Tag tag = tagRepository.findByName(tagName)
-                    .orElseGet(() -> {
-                        Tag newTag = Tag.builder()
-                            .name(tagName)
-                            .slug(generateSlug(tagName))
-                            .build();
-                        return tagRepository.save(newTag);
-                    });
-                return tag.getId();
-            }).collect(Collectors.toSet());
-            post.setTagId(tagsId);
-        }
+//        if (postRequest.getTags() != null && !postRequest.getTags().isEmpty()) {
+//            Set<String> tagsId = postRequest.getTags().stream().map(tagName -> {
+//                Tag tag = tagRepository.findByName(tagName)
+//                    .orElseGet(() -> {
+//                        Tag newTag = Tag.builder()
+//                            .name(tagName)
+//                            .slug(generateSlug(tagName))
+//                            .build();
+//                        return tagRepository.save(newTag);
+//                    });
+//                return tag.getId();
+//            }).collect(Collectors.toSet());
+//            post.setTagId(tagsId);
+//        }
 
         return postRepository.save(post);
     }

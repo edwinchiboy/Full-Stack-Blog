@@ -50,14 +50,14 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
-    @GetMapping("/tag/{tagId}")
-    public ResponseEntity<Page<Post>> getPostsByTag(
-        @PathVariable String tagId,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size) {
-        Page<Post> posts = postService.getPostsByTag(tagId, page, size);
-        return ResponseEntity.ok(posts);
-    }
+//    @GetMapping("/tag/{tagId}")
+//    public ResponseEntity<Page<Post>> getPostsByTag(
+//        @PathVariable String tagId,
+//        @RequestParam(defaultValue = "0") int page,
+//        @RequestParam(defaultValue = "10") int size) {
+//        Page<Post> posts = postService.getPostsByTag(tagId, page, size);
+//        return ResponseEntity.ok(posts);
+//    }
 
     @GetMapping("/search")
     public ResponseEntity<Page<Post>> searchPosts(

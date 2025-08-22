@@ -27,20 +27,17 @@ public class Tag extends Audit{
 
     private String slug;
 
-    private Set<String> postId;
 
     @Builder
     public Tag(final String id,
                final String name,
                final String description,
                final String slug,
-               final Set<String> postId,
                final LocalDateTime createdAt,
                final LocalDateTime updatedAt) {
         super(id,createdAt,updatedAt);
         this.name = name;
         this.description = description;
         this.slug = slug;
-        this.postId = postId;
     }
 }

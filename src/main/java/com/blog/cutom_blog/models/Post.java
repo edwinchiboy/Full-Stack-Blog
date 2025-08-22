@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -44,7 +43,6 @@ public class Post extends Audit {
 
     private String categoryId;
 
-    private Set<String> tagId;
 
     private LocalDateTime publishedAt;
 
@@ -62,7 +60,6 @@ public class Post extends Audit {
                 final PostStatus status,
                 final String authorId,
                 final String categoryId,
-                final Set<String> tagId,
                 final LocalDateTime createdAt,
                 final LocalDateTime updatedAt,
                 final LocalDateTime publishedAt, final String slug) {
@@ -76,7 +73,6 @@ public class Post extends Audit {
         this.status = status;
         this.authorId = authorId;
         this.categoryId = categoryId;
-        this.tagId = tagId;
         this.publishedAt = publishedAt;
         this.slug = slug;
     }

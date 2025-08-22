@@ -19,7 +19,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByStatusAndCategoryId(Post.PostStatus status, String categoryId, Pageable pageable);
 
-    Page<Post> findByStatusAndTagId(Post.PostStatus status, String tagId, Pageable pageable);
+//    Page<Post> findByStatusAndTagId(Post.PostStatus status, String tagId, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.status = :status AND (p.title LIKE %:keyword% OR p.content LIKE %:keyword%)")
     Page<Post> findByStatusAndTitleContainingOrContentContaining(@Param("status") Post.PostStatus status,
