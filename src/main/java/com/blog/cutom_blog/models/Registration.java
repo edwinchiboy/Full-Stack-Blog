@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Builder
-@Table(name = "wire_account_registration")
+@Table(name = "registration")
 public class Registration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +33,13 @@ public class Registration {
 
     private String lastName;
 
+    @Column(unique = true)
+    private String email;
+
+    private boolean emailVerified;
+
+    @Enumerated(EnumType.STRING)
+    private RegistrationStatus registrationStatus;
 
     public Registration(final Long id,
                         final LocalDateTime createdAt,
@@ -51,14 +58,5 @@ public class Registration {
         this.emailVerified = emailVerified;
         this.registrationStatus = registrationStatus;
     }
-
-    @Column(unique = true)
-
-    private String email;
-    private boolean emailVerified;
-
-    @Enumerated(EnumType.STRING)
-    private RegistrationStatus registrationStatus;
-
 
 }
