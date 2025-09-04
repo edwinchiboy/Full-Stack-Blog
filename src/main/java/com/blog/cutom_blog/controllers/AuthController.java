@@ -5,7 +5,6 @@ import com.blog.cutom_blog.config.utils.JwtUtils;
 import com.blog.cutom_blog.config.utils.UserDetailsImpl;
 import com.blog.cutom_blog.dtos.JwtResponse;
 import com.blog.cutom_blog.dtos.LoginRequest;
-import com.blog.cutom_blog.dtos.SignupRequest;
 import com.blog.cutom_blog.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
