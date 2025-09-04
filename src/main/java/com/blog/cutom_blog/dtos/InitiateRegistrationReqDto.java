@@ -21,37 +21,15 @@ public class InitiateRegistrationReqDto {
     @NotBlank(message = "is required")
     private String lastName;
 
-    @NotBlank(message = "is required")
-    private String businessName;
-
-    private String phoneNumber;
-
-    private String referrerCode;
-    @NotBlank(message = "is required")
-    private String paymentNeed;
 
     public InitiateRegistrationReqDto(final String email,
                                       final String firstName,
-                                      final String lastName,
-                                      final String businessName,
-                                      final String phoneNumber,
-                                      final String referrerCode, final String paymentNeed) {
+                                      final String lastName) {
         this.email = email.trim().toLowerCase();
         this.firstName = firstName.trim().toLowerCase();
         this.lastName = lastName.trim().toLowerCase();
-        this.businessName = businessName.trim();
-        this.phoneNumber = phoneNumber != null ? phoneNumber.trim() : null;
-        this.referrerCode = referrerCode != null ? referrerCode.trim() : null;
-        this.paymentNeed = paymentNeed;
     }
 
-    public void setBusinessName(final String businessName) {
-        this.businessName = businessName.trim();
-    }
-
-    public void setPhoneNumber(final String phoneNumber) {
-        this.phoneNumber = phoneNumber.trim();
-    }
 
     public void setEmail(final String email) {
         this.email = email.trim().toLowerCase();
@@ -63,14 +41,6 @@ public class InitiateRegistrationReqDto {
 
     public void setLastName(final String lastName) {
         this.lastName = lastName.trim().toLowerCase();
-    }
-
-    public void setReferrerCode(final String referrerCode) {
-        this.referrerCode = referrerCode.trim();
-    }
-
-    public void setPaymentNeed(final String paymentNeed) {
-        this.paymentNeed = paymentNeed.trim();
     }
 
 }
