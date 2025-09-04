@@ -3,37 +3,23 @@ package com.blog.cutom_blog.models;
 
 import com.blog.cutom_blog.constants.ERole;
 import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "roles")
-public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+@Data
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@EqualsAndHashCode(callSuper = true)
+public class Role extends Audit {
 
     @Enumerated(EnumType.STRING)
-    @Column(length = 20)
     private ERole name;
 
-    public Role() {}
-
-    public Role(ERole name) {
-        this.name = name;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public ERole getName() {
-        return name;
-    }
-
-    public void setName(ERole name) {
+    @Builder
+    public Role(final String id, LocalDateTime createdAt, LocalDateTime updatedAt, final ERole name) {
+        super(id, createdAt, updatedAt);
         this.name = name;
     }
 }

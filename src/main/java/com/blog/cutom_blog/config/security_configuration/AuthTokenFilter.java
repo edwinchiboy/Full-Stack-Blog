@@ -2,7 +2,6 @@ package com.blog.cutom_blog.config.security_configuration;
 
 
 
-import com.blog.cutom_blog.config.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

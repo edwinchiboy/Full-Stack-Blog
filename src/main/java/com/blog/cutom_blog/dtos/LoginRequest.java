@@ -1,8 +1,15 @@
 package com.blog.cutom_blog.dtos;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginRequest {
     @NotBlank
     private String username;
@@ -10,19 +17,4 @@ public class LoginRequest {
     @NotBlank
     private String password;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

@@ -1,7 +1,6 @@
 package com.blog.cutom_blog.config.security_configuration;
 
 
-import com.blog.cutom_blog.config.utils.UserDetailsImpl;
 import com.blog.cutom_blog.models.User;
 import com.blog.cutom_blog.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
+    UserDetailsImpl userDetailsImpl;
 
     @Override
     @Transactional
@@ -22,6 +22,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
-        return UserDetailsImpl.build(user);
+        return userDetailsImpl.build(user);
     }
 }

@@ -27,7 +27,7 @@ public class CommentService {
     @Autowired
     private UserRepository userRepository;
 
-    public Page<Comment> getCommentsByPost(Long postId, int page, int size) {
+    public Page<Comment> getCommentsByPost(String postId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
         return commentRepository.findByPostId(postId, pageable);
     }
@@ -41,8 +41,8 @@ public class CommentService {
 
         Comment comment = new Comment();
         comment.setContent(commentRequest.getContent());
-        comment.setPost(post);
-        comment.setUser(user);
+        comment.setPostId(post.getId());
+        comment.setAuthorId(user.getId());
 
         return commentRepository.save(comment);
     }
@@ -51,7 +51,7 @@ public class CommentService {
         commentRepository.deleteById(commentId);
     }
 
-    public Long getCommentCountByPost(Long postId) {
+    public Long getCommentCountByPost(String postId) {
         return commentRepository.countByPostId(postId);
     }
 
@@ -60,6 +60,6 @@ public class CommentService {
             .orElseThrow(() -> new RuntimeException("User not found"));
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return commentRepository.findByUserId(user.getId(), pageable);
+        return commentRepository.findByAuthorId(user.getId(), pageable);
     }
 }

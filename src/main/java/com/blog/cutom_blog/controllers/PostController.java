@@ -28,7 +28,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable Long id) {
+    public ResponseEntity<Post> getPostById(@PathVariable String id) {
         return postService.getPostById(id)
             .map(post -> ResponseEntity.ok().body(post))
             .orElse(ResponseEntity.notFound().build());
@@ -43,21 +43,21 @@ public class PostController {
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<Page<Post>> getPostsByCategory(
-        @PathVariable Long categoryId,
+        @PathVariable String categoryId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size) {
         Page<Post> posts = postService.getPostsByCategory(categoryId, page, size);
         return ResponseEntity.ok(posts);
     }
 
-    @GetMapping("/tag/{tagId}")
-    public ResponseEntity<Page<Post>> getPostsByTag(
-        @PathVariable Long tagId,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size) {
-        Page<Post> posts = postService.getPostsByTag(tagId, page, size);
-        return ResponseEntity.ok(posts);
-    }
+//    @GetMapping("/tag/{tagId}")
+//    public ResponseEntity<Page<Post>> getPostsByTag(
+//        @PathVariable String tagId,
+//        @RequestParam(defaultValue = "0") int page,
+//        @RequestParam(defaultValue = "10") int size) {
+//        Page<Post> posts = postService.getPostsByTag(tagId, page, size);
+//        return ResponseEntity.ok(posts);
+//    }
 
     @GetMapping("/search")
     public ResponseEntity<Page<Post>> searchPosts(
