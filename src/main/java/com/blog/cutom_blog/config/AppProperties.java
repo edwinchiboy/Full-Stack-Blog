@@ -10,11 +10,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AppProperties {
     private final Environment environment;
     private final EmailConfig emailConfig;
+    private final String defaultFromEmail;
 
 
-    public AppProperties(final Environment environment, final EmailConfig emailConfig) {
+    public AppProperties(final Environment environment, final EmailConfig emailConfig, final String defaultFromEmail) {
         this.environment = environment;
         this.emailConfig = emailConfig;
+        this.defaultFromEmail = defaultFromEmail;
     }
 
     @Getter

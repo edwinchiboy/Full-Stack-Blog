@@ -4,7 +4,6 @@ package com.blog.cutom_blog.services;
 import com.blog.cutom_blog.dtos.PostRequest;
 import com.blog.cutom_blog.models.Category;
 import com.blog.cutom_blog.models.Post;
-import com.blog.cutom_blog.models.Tag;
 import com.blog.cutom_blog.models.User;
 import com.blog.cutom_blog.repositories.CategoryRepository;
 import com.blog.cutom_blog.repositories.PostRepository;
@@ -19,8 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+
 
 @Service
 public class PostService {

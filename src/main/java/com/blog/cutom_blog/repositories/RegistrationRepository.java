@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface RegistrationRepository extends JpaRepository<Registration, Long>  {
+public interface RegistrationRepository extends JpaRepository<Registration, String>  {
 
-    boolean existsByEmail(String email);
+   public boolean existsByEmail(String email);
 
-    Optional<Registration> getByEmail(String email);
+    public Optional<Registration> getByEmailIgnoreCase(String email);
 
 }

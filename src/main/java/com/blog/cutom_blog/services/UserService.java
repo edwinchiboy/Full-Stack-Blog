@@ -2,6 +2,7 @@ package com.blog.cutom_blog.services;
 
 
 import com.blog.cutom_blog.constants.ERole;
+import com.blog.cutom_blog.models.Registration;
 import com.blog.cutom_blog.models.Role;
 import com.blog.cutom_blog.models.User;
 import com.blog.cutom_blog.repositories.RoleRepository;
@@ -25,13 +26,13 @@ public class UserService {
     @Autowired
     PasswordEncoder encoder;
 
-    public User createUser(SignupRequest signUpRequest) {
+    public User createUser(Registration registration, String password) {
         User user = User.builder()
-            .username(signUpRequest.getUsername())
-            .firstName(signUpRequest.getFirstName())
-            .lastName(signUpRequest.getLastName())
-            .email(signUpRequest.getEmail())
-            .password(encoder.encode(signUpRequest.getPassword()))
+            .username(String.format("%s-%s", registration.getFirstName(),registration.getLastName()))
+            .firstName(registration.getFirstName())
+            .lastName(registration.getLastName())
+            .email(registration.getEmail())
+            .password(encoder.encode(password))
             .build();
 
         Role userRole = roleRepository.findByName(signUpRequest.getRole())
