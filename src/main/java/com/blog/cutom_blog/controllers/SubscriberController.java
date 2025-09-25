@@ -1,6 +1,7 @@
 package com.blog.cutom_blog.controllers;
 
 
+import com.blog.cutom_blog.dtos.MessageResponse;
 import com.blog.cutom_blog.models.Subscriber;
 import com.blog.cutom_blog.services.SubscriberService;
 import jakarta.validation.Valid;
@@ -70,23 +71,6 @@ public class SubscriberController {
 
         public void setEmail(String email) {
             this.email = email;
-        }
-    }
-
-    // Message response class
-    public static class MessageResponse {
-        private String message;
-
-        public MessageResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
         }
     }
 }

@@ -2,6 +2,7 @@ package com.blog.cutom_blog.controllers;
 
 
 import com.blog.cutom_blog.dtos.CommentRequest;
+import com.blog.cutom_blog.dtos.MessageResponse;
 import com.blog.cutom_blog.models.Comment;
 import com.blog.cutom_blog.services.CommentService;
 import jakarta.validation.Valid;
@@ -61,21 +62,5 @@ public class CommentController {
         return ResponseEntity.ok(comments);
     }
 
-    public static class MessageResponse {
-        private String message;
-
-        public MessageResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-    }
 }
 
-// Message response class

@@ -1,5 +1,6 @@
 package com.blog.cutom_blog.controllers;
 
+import com.blog.cutom_blog.dtos.MessageResponse;
 import com.blog.cutom_blog.dtos.PostRequest;
 import com.blog.cutom_blog.models.Post;
 import com.blog.cutom_blog.services.PostService;
@@ -101,20 +102,4 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
-    // Message response class
-    public static class MessageResponse {
-        private String message;
-
-        public MessageResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-    }
 }

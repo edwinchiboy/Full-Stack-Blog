@@ -1,6 +1,7 @@
 package com.blog.cutom_blog.controllers;
 
 
+import com.blog.cutom_blog.dtos.MessageResponse;
 import com.blog.cutom_blog.models.Category;
 import com.blog.cutom_blog.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,20 +90,5 @@ public class CategoryController {
         }
     }
 
-    // Message response class
-    public static class MessageResponse {
-        private String message;
 
-        public MessageResponse(String message) {
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-    }
 }

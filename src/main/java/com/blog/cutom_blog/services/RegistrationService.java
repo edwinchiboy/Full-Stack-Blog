@@ -1,7 +1,10 @@
 package com.blog.cutom_blog.services;
 
 import com.blog.cutom_blog.commons.auth.dtos.AuthResponse;
+import com.blog.cutom_blog.commons.comms.MailGunService;
 import com.blog.cutom_blog.commons.comms.constants.OtpPurpose;
+import com.blog.cutom_blog.commons.comms.dtos.EmailDto;
+import com.blog.cutom_blog.commons.comms.dtos.EmailWithoutAttachmentDto;
 import com.blog.cutom_blog.commons.comms.dtos.SendOtpResponse;
 import com.blog.cutom_blog.config.AppProperties;
 import com.blog.cutom_blog.constants.RegistrationStep;
@@ -21,8 +24,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 
 @Slf4j
 @Service
@@ -30,12 +35,14 @@ public class RegistrationService {
     private final RegistrationRepository repository;
     private final UserService userService;
     private final AppProperties appProperties;
+    private final MailGunService mailGunService;
 
     public RegistrationService(final RegistrationRepository repository, final UserService userService,
-                               final AppProperties appProperties) {
+                               final AppProperties appProperties, final MailGunService mailGunService) {
         this.repository = repository;
         this.userService = userService;
         this.appProperties = appProperties;
+        this.mailGunService = mailGunService;
     }
 
     public InitiateCustomerRegistrationResponseDto initiateRegistration(@Valid InitiateCustomerRegistrationReqDto initiateRegistrationRequestDto) {
@@ -59,12 +66,12 @@ public class RegistrationService {
                 .build());
         }
 
-        final SendOtpResponse sendOtpResponse = communicationServiceClient.sendEmailOtp(EmailOTPRequest.builder()
-            .message("Use the confirmation code below to verify your email and proceed to complete your account setup.")
+        final SendOtpResponse sendOtpResponse = mailGunService.sendEmail(EmailDto.builder()
+//            .message("Use the confirmation code below to verify your email and proceed to complete your account setup.")
             .from(appProperties.getDefaultFromEmail())
-            .to(fetchedCustomerRegistration.getEmail())
-            .tokenIdentifier(fetchedCustomerRegistration.getId())
-            .otpPurpose(OtpPurpose.SIGNUP)
+            .to(List.of(fetchedCustomerRegistration.getEmail()))
+            .subject()
+            .body()
             .build());
 
         return InitiateCustomerRegistrationResponseDto.builder()
