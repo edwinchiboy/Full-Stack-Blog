@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InitiateRegistrationReqDto {

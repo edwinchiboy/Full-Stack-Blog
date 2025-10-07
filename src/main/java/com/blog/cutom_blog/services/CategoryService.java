@@ -18,7 +18,7 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Optional<Category> getCategoryById(Long id) {
+    public Optional<Category> getCategoryById(String id) {
         return categoryRepository.findById(id);
     }
 
@@ -34,7 +34,7 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public Category updateCategory(Long id, String name, String description) {
+    public Category updateCategory(String id, String name, String description) {
         Category category = categoryRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Category not found"));
 
@@ -47,7 +47,7 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public void deleteCategory(Long id) {
+    public void deleteCategory(String id) {
         categoryRepository.deleteById(id);
     }
 

@@ -32,7 +32,7 @@ public class CommentController {
 
     @PostMapping("/post/{postId}")
     @PreAuthorize("hasRole('READER') or hasRole('ADMIN')")
-    public ResponseEntity<Comment> createComment(@PathVariable Long postId,
+    public ResponseEntity<Comment> createComment(@PathVariable String postId,
                                                  @Valid @RequestBody CommentRequest commentRequest,
                                                  Authentication authentication) {
         Comment comment = commentService.createComment(postId, commentRequest, authentication.getName());
@@ -41,7 +41,7 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
+    public ResponseEntity<?> deleteComment(@PathVariable String commentId) {
         commentService.deleteComment(commentId);
         return ResponseEntity.ok(new MessageResponse("Comment deleted successfully!"));
     }

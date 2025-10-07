@@ -19,12 +19,23 @@ public class SubscriberService {
     }
 
     public Subscriber subscribe(String email) {
+        // Check if subscriber exists
         if (subscriberRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email already subscribed");
+            Subscriber existing = subscriberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Subscriber not found"));
+
+            // If already active, throw error
+            if (existing.isActive()) {
+                throw new RuntimeException("Email already subscribed");
+            }
+
+            // Reactivate if previously unsubscribed
+            existing.setActive(true);
+            return subscriberRepository.save(existing);
         }
 
         Subscriber subscriber = Subscriber.builder()
-            .active(false)
+            .active(true)
             .email(email)
             .build();
 
@@ -32,10 +43,15 @@ public class SubscriberService {
     }
 
     public void unsubscribe(String email) {
-        Subscriber subscriber = subscriberRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Subscriber not found"));
+        Subscriber subscriber = subscriberRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Subscriber not found"));
 
         subscriber.setActive(false);
         subscriberRepository.save(subscriber);
+    }
+
+    public List<Subscriber> getActiveSubscribers() {
+        return subscriberRepository.findByActive(true);
     }
 
     public Long getActiveSubscriberCount() {

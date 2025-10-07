@@ -3,177 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Web3 Blog</title>
-    <meta name="description" content="Login to your Web3 Blog account to access exclusive content and participate in discussions.">
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Login - CryptoBlog</title>
+    <meta name="description" content="Log in to your CryptoBlog account">
+    <link rel="stylesheet" href="../static/css/styles.css">
 </head>
 <body>
-<header>
-    <div class="container">
-        <div class="header-content">
-            <a href="index.html" class="logo">Web3 Blog</a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="index.html">All Posts</a></li>
-                </ul>
-            </nav>
-            <div class="auth-buttons">
-                <a href="register.html" class="btn btn-primary">Register</a>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="text-center mb-2xl">
+                <a href="index.html" class="header__logo" style="font-size: var(--font-size-3xl);">CRYPTOBLOG</a>
             </div>
-        </div>
-    </div>
-</header>
 
-<main>
-    <div class="container">
-        <div class="form-container">
-            <h2 class="text-center mb-4">Login to Web3 Blog</h2>
+            <h2 class="auth-card__title">Welcome Back</h2>
 
-            <div id="alertContainer"></div>
+            <div id="error-message" class="hidden">
+                <div class="alert alert--error mb-xl">
+                    Invalid credentials. Please try again.
+                </div>
+            </div>
 
-            <form id="loginForm">
+            <form>
                 <div class="form-group">
-                    <label for="username">Username or Email</label>
-                    <input type="text" id="username" class="form-control" required>
+                    <label for="email" class="form-label">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        class="form-input"
+                        placeholder="your@email.com"
+                        required
+                        aria-required="true">
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" class="form-control" required>
+                    <label for="password" class="form-label">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-input"
+                        placeholder="Enter your password"
+                        required
+                        aria-required="true">
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%;" id="loginBtn">
-                    Login
+                <div class="flex justify-between items-center mb-xl">
+                    <label class="flex items-center gap-sm" style="cursor: pointer;">
+                        <input type="checkbox" id="remember" style="width: auto; cursor: pointer;">
+                        <span style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Remember me</span>
+                    </label>
+                    <a href="#" style="font-size: var(--font-size-sm); color: var(--color-primary);">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn btn--primary w-full mb-lg">
+                    Sign In
                 </button>
+
+                <div class="text-center">
+                    <button type="button" class="btn btn--secondary w-full">
+                        Continue with MetaMask
+                    </button>
+                </div>
             </form>
 
-            <div class="text-center mt-3">
-                <p>Don't have an account? <a href="register.html">Register here</a></p>
+            <div class="auth-card__footer">
+                <p>Don't have an account? <a href="register.html">Sign up</a></p>
+                <p style="margin-top: var(--space-sm);"><a href="index.html">← Back to home</a></p>
             </div>
         </div>
     </div>
-</main>
-
-<footer>
-    <div class="container">
-        <div class="footer-content">
-            <p>&copy; 2025 Web3 Blog. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Contact</a>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<script>
-    const API_BASE = 'http://localhost:8080/api';
-
-    // Check if already logged in
-    function checkAuth() {
-        const token = localStorage.getItem('token');
-        if (token) {
-            // Redirect to dashboard or home
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            if (user.roles && user.roles.includes('ROLE_ADMIN')) {
-                window.location.href = 'dashboard.html';
-            } else {
-                window.location.href = 'index.html';
-            }
-        }
-    }
-
-    // Show alert message
-    function showAlert(message, type = 'error') {
-        const alertContainer = document.getElementById('alertContainer');
-        alertContainer.innerHTML = `
-            <div class="alert alert-${type === 'error' ? 'error' : 'success'}">
-                ${message}
-            </div>
-        `;
-
-        // Auto-hide success messages
-        if (type === 'success') {
-            setTimeout(() => {
-                alertContainer.innerHTML = '';
-            }, 3000);
-        }
-    }
-
-    // Handle login form submission
-    async function handleLogin(event) {
-        event.preventDefault();
-
-        const loginBtn = document.getElementById('loginBtn');
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value;
-
-        if (!username || !password) {
-            showAlert('Please fill in all fields');
-            return;
-        }
-
-        // Disable button and show loading
-        loginBtn.disabled = true;
-        loginBtn.textContent = 'Logging in...';
-
-        try {
-            const response = await fetch(`${API_BASE}/auth/signin`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Store authentication data
-                localStorage.setItem('token', data.accessToken);
-                localStorage.setItem('user', JSON.stringify({
-                    id: data.id,
-                    username: data.username,
-                    email: data.email,
-                    roles: data.roles
-                }));
-
-                showAlert('Login successful! Redirecting...', 'success');
-
-                // Redirect based on user role
-                setTimeout(() => {
-                    if (data.roles.includes('ROLE_ADMIN')) {
-                        window.location.href = 'dashboard.html';
-                    } else {
-                        window.location.href = 'index.html';
-                    }
-                }, 1500);
-
-            } else {
-                showAlert(data.message || 'Login failed. Please check your credentials.');
-            }
-
-        } catch (error) {
-            console.error('Login error:', error);
-            showAlert('Network error. Please try again.');
-        } finally {
-            loginBtn.disabled = false;
-            loginBtn.textContent = 'Login';
-        }
-    }
-
-    // Event listeners
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
-
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', function() {
-        checkAuth();
-    });
-</script>
 </body>
 </html>

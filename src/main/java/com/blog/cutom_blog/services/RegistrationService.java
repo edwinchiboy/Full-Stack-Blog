@@ -1,10 +1,5 @@
 package com.blog.cutom_blog.services;
 
-import com.blog.cutom_blog.commons.auth.dtos.AuthResponse;
-import com.blog.cutom_blog.commons.comms.MailGunService;
-import com.blog.cutom_blog.commons.comms.constants.OtpPurpose;
-import com.blog.cutom_blog.commons.comms.dtos.EmailDto;
-import com.blog.cutom_blog.commons.comms.dtos.EmailWithoutAttachmentDto;
 import com.blog.cutom_blog.commons.comms.dtos.SendOtpResponse;
 import com.blog.cutom_blog.config.AppProperties;
 import com.blog.cutom_blog.constants.RegistrationStep;
@@ -24,7 +19,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,26 +29,25 @@ public class RegistrationService {
     private final RegistrationRepository repository;
     private final UserService userService;
     private final AppProperties appProperties;
-    private final MailGunService mailGunService;
+    private final OtpService otpService;
 
     public RegistrationService(final RegistrationRepository repository, final UserService userService,
-                               final AppProperties appProperties, final MailGunService mailGunService) {
+                               final AppProperties appProperties, final OtpService otpService) {
         this.repository = repository;
         this.userService = userService;
         this.appProperties = appProperties;
-        this.mailGunService = mailGunService;
+        this.otpService = otpService;
     }
 
     public InitiateCustomerRegistrationResponseDto initiateRegistration(@Valid InitiateCustomerRegistrationReqDto initiateRegistrationRequestDto) {
         if (userService.existsByEmail(initiateRegistrationRequestDto.getEmail())) {
-            throw new ConflictException("Duplicate username", "A user already exists with the supplied email", HttpErrorCode.EXISTING_EMAIL);
+            throw new ConflictException("Duplicate email", "A user already exists with the supplied email");
         }
 
         final Optional<Registration> pendingCustomerRegistrationOpt = repository.getByEmailIgnoreCase(initiateRegistrationRequestDto.getEmail());
-        Registration fetchedCustomerRegistration = null;
+        Registration fetchedCustomerRegistration;
         if (pendingCustomerRegistrationOpt.isPresent()) {
             fetchedCustomerRegistration = pendingCustomerRegistrationOpt.get();
-
         } else {
             final Set<RegistrationStep> completedRegistrationSteps = new HashSet<>();
             completedRegistrationSteps.add(RegistrationStep.SUBMIT_EMAIL);
@@ -66,13 +59,10 @@ public class RegistrationService {
                 .build());
         }
 
-        final SendOtpResponse sendOtpResponse = mailGunService.sendEmail(EmailDto.builder()
-//            .message("Use the confirmation code below to verify your email and proceed to complete your account setup.")
-            .from(appProperties.getDefaultFromEmail())
-            .to(List.of(fetchedCustomerRegistration.getEmail()))
-            .subject()
-            .body()
-            .build());
+        final SendOtpResponse sendOtpResponse = otpService.generateAndSendOtp(
+            fetchedCustomerRegistration.getEmail(),
+            fetchedCustomerRegistration.getId()
+        );
 
         return InitiateCustomerRegistrationResponseDto.builder()
             .registrationId(fetchedCustomerRegistration.getId())
@@ -87,13 +77,10 @@ public class RegistrationService {
         Registration fetchedCustomerRegistration = this.repository.findById(registrationId)
             .orElseThrow(() -> new NotFoundException("Unknown registration id"));
 
-        return this.communicationServiceClient.sendEmailOtp(EmailOTPRequest.builder()
-            .message("Use the confirmation code below to verify your email and proceed to complete your account setup.")
-            .from(appProperties.getDefaultFromEmail())
-            .to(fetchedCustomerRegistration.getEmail())
-            .tokenIdentifier(fetchedCustomerRegistration.getId())
-            .otpPurpose(OtpPurpose.SIGNUP)
-            .build());
+        return otpService.generateAndSendOtp(
+            fetchedCustomerRegistration.getEmail(),
+            fetchedCustomerRegistration.getId()
+        );
     }
 
     public void validateOtp(final ValidateOtpRequestDto validateOtpRequestDto) {
@@ -101,15 +88,13 @@ public class RegistrationService {
             .orElseThrow(() -> new NotFoundException("Unknown registration id"));
 
         if (!customerRegistration.getCompletedRegistrationSteps().contains(RegistrationStep.VERIFY_EMAIL)) {
-            if (!communicationServiceClient.validateEmailOtp(validateOtpRequestDto.getOtp(), customerRegistration
-                .getId())) {
-                final String errorMessage = "Incorrect Otp";
+            if (!otpService.validateOtp(validateOtpRequestDto.getOtp(), customerRegistration.getId())) {
+                final String errorMessage = "Incorrect OTP";
                 throw new ForbiddenException(errorMessage, errorMessage);
             }
             customerRegistration.getCompletedRegistrationSteps().add(RegistrationStep.VERIFY_EMAIL);
             this.repository.save(customerRegistration);
         }
-
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
@@ -122,24 +107,18 @@ public class RegistrationService {
             throw new ForbiddenException("Email verification pending. Please verify your email to complete registration.");
         }
 
-        final AuthResponse authResponse = authServerClient
-            .getToken(customerRegistration.getEmail(), completeSignUpReqDto.getPassword(), false);
-
-        authResponse.getPrincipal().setAuthToken(authResponse.getToken());
-
         final User user = this.userService.createUser(customerRegistration, completeSignUpReqDto.getPassword());
 
         try {
             repository.delete(customerRegistration);
         } catch (final RuntimeException e) {
-            log.error("Error saving referral and deleting registration record.");
+            log.error("Error deleting registration record: {}", e.getMessage());
         }
 
         return CompleteSignUpResponseDto.builder()
-            .email(customerRegistration.getEmail())
-            .registrationId(customerRegistration.getId())
-            .authResponse(authResponse)
-            .user(user)
+            .email(user.getEmail())
+            .userId(user.getId())
+            .message("Registration completed successfully. Please login to continue.")
             .build();
     }
 

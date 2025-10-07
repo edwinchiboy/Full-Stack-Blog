@@ -3,488 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Web3 Blog</title>
-    <meta name="description" content="Admin dashboard for managing Web3 Blog posts, comments, and subscribers.">
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Dashboard - CryptoBlog</title>
+    <meta name="description" content="Manage your blog posts and view analytics">
+    <link rel="stylesheet" href="../static/css/styles.css">
 </head>
 <body>
-<header>
-    <div class="container">
-        <div class="header-content">
-            <a href="index.html" class="logo">Web3 Blog</a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">View Site</a></li>
-                    <li><a href="dashboard.html" class="active">Dashboard</a></li>
-                    <li><a href="create-post.html">New Post</a></li>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header__container">
+            <a href="index.html" class="header__logo">CRYPTOBLOG</a>
+
+            <nav class="nav">
+                <ul class="nav__list">
+                    <li><a href="index.html" class="nav__link">Home</a></li>
+                    <li><a href="dashboard.html" class="nav__link nav__link--active">Dashboard</a></li>
+                    <li><a href="create-post.html" class="nav__link">New Post</a></li>
                 </ul>
             </nav>
-            <div class="auth-buttons" id="authButtons">
-                <!-- Will be populated by JavaScript -->
+
+            <div class="header__actions">
+                <div class="header__user">
+                    <span>Welcome, Admin</span>
+                </div>
+                <button class="btn btn--secondary btn--small">Logout</button>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<main>
-    <div class="container">
-        <h1>Admin Dashboard</h1>
-
-        <!-- Statistics Cards -->
-        <div class="dashboard">
-            <div class="stat-card">
-                <div class="stat-number" id="totalPosts">-</div>
-                <div class="stat-label">Total Posts</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="publishedPosts">-</div>
-                <div class="stat-label">Published Posts</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalComments">-</div>
-                <div class="stat-label">Total Comments</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalSubscribers">-</div>
-                <div class="stat-label">Subscribers</div>
-            </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Quick Actions</h3>
-            </div>
-            <div class="card-content">
-                <div class="d-flex gap-2" style="flex-wrap: wrap;">
-                    <a href="create-post.html" class="btn btn-primary">Create New Post</a>
-                    <button onclick="showManageCategories()" class="btn btn-secondary">Manage Categories</button>
-                    <button onclick="exportSubscribers()" class="btn btn-success">Export Subscribers</button>
+    <!-- Main Content -->
+    <main class="section">
+        <div class="container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <h1 class="dashboard-header__title">Dashboard</h1>
+                <div class="dashboard-header__actions">
+                    <a href="create-post.html" class="btn btn--primary">Create New Post</a>
                 </div>
             </div>
-        </div>
 
-        <!-- Recent Posts -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Recent Posts</h3>
-                <a href="create-post.html" class="btn btn-primary">New Post</a>
-            </div>
-            <div class="table-container">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Status</th>
-                        <th>Category</th>
-                        <th>Created</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody id="recentPostsTable">
-                    <!-- Posts will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Recent Comments -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Recent Comments</h3>
-            </div>
-            <div class="table-container">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Post</th>
-                        <th>Comment</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody id="recentCommentsTable">
-                    <!-- Comments will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Categories Management Modal -->
-        <div id="categoriesModal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Manage Categories</h3>
-                    <button onclick="hideCategoriesModal()" class="btn btn-secondary">×</button>
+            <!-- Statistics Cards -->
+            <div class="grid grid--stats mb-3xl">
+                <div class="card stat-card">
+                    <div class="stat-card__number">247</div>
+                    <div class="stat-card__label">Total Posts</div>
                 </div>
-                <div class="modal-body">
-                    <form id="categoryForm" class="mb-3">
-                        <div class="form-group">
-                            <label for="categoryName">Category Name</label>
-                            <input type="text" id="categoryName" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="categoryDescription">Description</label>
-                            <textarea id="categoryDescription" class="form-control" rows="3"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add Category</button>
-                    </form>
 
-                    <div id="categoriesList">
-                        <!-- Categories will be loaded here -->
+                <div class="card stat-card">
+                    <div class="stat-card__number">189</div>
+                    <div class="stat-card__label">Published</div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-card__number">3.2K</div>
+                    <div class="stat-card__label">Total Views</div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="stat-card__number">856</div>
+                    <div class="stat-card__label">Comments</div>
+                </div>
+            </div>
+
+            <!-- Recent Posts Table -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-xl">
+                    <h2 class="mb-0">Recent Posts</h2>
+                    <div class="flex gap-md">
+                        <button class="btn btn--ghost btn--small">Filter</button>
+                        <button class="btn btn--secondary btn--small">Export</button>
                     </div>
                 </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Views</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <strong>Understanding Liquidity Pools</strong>
+                                </td>
+                                <td>DeFi</td>
+                                <td><span class="badge badge--success">Published</span></td>
+                                <td>1,245</td>
+                                <td>Mar 15, 2025</td>
+                                <td>
+                                    <div class="table__actions">
+                                        <a href="create-post.html" class="btn btn--ghost btn--small">Edit</a>
+                                        <button class="btn btn--ghost btn--small" style="color: var(--color-error);">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>NFT Marketplaces Evolution</strong>
+                                </td>
+                                <td>NFTs</td>
+                                <td><span class="badge badge--success">Published</span></td>
+                                <td>987</td>
+                                <td>Mar 14, 2025</td>
+                                <td>
+                                    <div class="table__actions">
+                                        <a href="create-post.html" class="btn btn--ghost btn--small">Edit</a>
+                                        <button class="btn btn--ghost btn--small" style="color: var(--color-error);">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Layer 2 Scaling Solutions</strong>
+                                </td>
+                                <td>Blockchain</td>
+                                <td><span class="badge badge--warning">Draft</span></td>
+                                <td>0</td>
+                                <td>Mar 13, 2025</td>
+                                <td>
+                                    <div class="table__actions">
+                                        <a href="create-post.html" class="btn btn--ghost btn--small">Edit</a>
+                                        <button class="btn btn--ghost btn--small" style="color: var(--color-error);">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Crypto Trading Strategies</strong>
+                                </td>
+                                <td>Trading</td>
+                                <td><span class="badge badge--success">Published</span></td>
+                                <td>2,156</td>
+                                <td>Mar 12, 2025</td>
+                                <td>
+                                    <div class="table__actions">
+                                        <a href="create-post.html" class="btn btn--ghost btn--small">Edit</a>
+                                        <button class="btn btn--ghost btn--small" style="color: var(--color-error);">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Security Best Practices</strong>
+                                </td>
+                                <td>Security</td>
+                                <td><span class="badge badge--success">Published</span></td>
+                                <td>1,543</td>
+                                <td>Mar 11, 2025</td>
+                                <td>
+                                    <div class="table__actions">
+                                        <a href="create-post.html" class="btn btn--ghost btn--small">Edit</a>
+                                        <button class="btn btn--ghost btn--small" style="color: var(--color-error);">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<footer>
-    <div class="container">
-        <div class="footer-content">
-            <p>&copy; 2025 Web3 Blog. All rights reserved.</p>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <p class="footer__text">&copy; 2025 CryptoBlog. All rights reserved.</p>
+                <ul class="footer__links">
+                    <li><a href="#" class="footer__link">Privacy Policy</a></li>
+                    <li><a href="#" class="footer__link">Terms of Service</a></li>
+                    <li><a href="#" class="footer__link">Contact</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
-</footer>
-
-<style>
-    /* Modal styles */
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-    }
-
-    .modal-content {
-        background: white;
-        border-radius: 10px;
-        max-width: 600px;
-        width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .modal-body {
-        padding: 1rem;
-    }
-
-    .category-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border: 1px solid #e9ecef;
-        border-radius: 5px;
-        margin-bottom: 0.5rem;
-    }
-
-    .status-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-
-    .status-published {
-        background-color: #d4edda;
-        color: #155724;
-    }
-
-    .status-draft {
-        background-color: #fff3cd;
-        color: #856404;
-    }
-
-    .status-archived {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-</style>
-
-<script>
-    const API_BASE = 'http://localhost:8080/api';
-
-    // Check authentication and admin role
-    function checkAuth() {
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-        if (!token || !user.roles || !user.roles.includes('ROLE_ADMIN')) {
-            window.location.href = 'login.html';
-            return false;
-        }
-
-        // Update auth buttons
-        document.getElementById('authButtons').innerHTML = `
-            <span>Welcome, ${user.username}</span>
-            <button onclick="logout()" class="btn btn-secondary">Logout</button>
-        `;
-
-        return true;
-    }
-
-    // Logout function
-    function logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = 'index.html';
-    }
-
-    // Load dashboard statistics
-    async function loadStats() {
-        const token = localStorage.getItem('token');
-
-        try {
-            // Load posts statistics
-            const postsResponse = await fetch(`${API_BASE}/posts?page=0&size=1`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const postsData = await postsResponse.json();
-            document.getElementById('totalPosts').textContent = postsData.totalElements || '0';
-            document.getElementById('publishedPosts').textContent = postsData.totalElements || '0';
-
-            // Load subscribers count
-            const subscribersResponse = await fetch(`${API_BASE}/subscribers/count`);
-            const subscribersCount = await subscribersResponse.json();
-            document.getElementById('totalSubscribers').textContent = subscribersCount || '0';
-
-        } catch (error) {
-            console.error('Error loading statistics:', error);
-        }
-    }
-
-    // Load recent posts
-    async function loadRecentPosts() {
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-        try {
-            const response = await fetch(`${API_BASE}/posts/author/${user.username}?page=0&size=10`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await response.json();
-
-            const tbody = document.getElementById('recentPostsTable');
-
-            if (data.content && data.content.length > 0) {
-                tbody.innerHTML = data.content.map(post => `
-                    <tr>
-                        <td>
-                            <strong>${post.title}</strong>
-                            <br>
-                            <small>${post.excerpt || 'No excerpt'}</small>
-                        </td>
-                        <td>
-                            <span class="status-badge status-${post.status.toLowerCase()}">
-                                ${post.status}
-                            </span>
-                        </td>
-                        <td>${post.category ? post.category.name : 'Uncategorized'}</td>
-                        <td>${formatDate(post.createdAt)}</td>
-                        <td>
-                            <a href="create-post.html?id=${post.id}" class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;">Edit</a>
-                            <button onclick="deletePost(${post.id})" class="btn btn-danger" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;">Delete</button>
-                            <a href="post.html?slug=${post.slug}" class="btn btn-primary" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" target="_blank">View</a>
-                        </td>
-                    </tr>
-                `).join('');
-            } else {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center">No posts found</td></tr>';
-            }
-
-        } catch (error) {
-            console.error('Error loading recent posts:', error);
-        }
-    }
-
-    // Delete post
-    async function deletePost(postId) {
-        if (!confirm('Are you sure you want to delete this post?')) return;
-
-        const token = localStorage.getItem('token');
-
-        try {
-            const response = await fetch(`${API_BASE}/posts/${postId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.ok) {
-                loadRecentPosts(); // Reload posts
-                loadStats(); // Update stats
-            } else {
-                alert('Failed to delete post');
-            }
-        } catch (error) {
-            console.error('Error deleting post:', error);
-            alert('Failed to delete post');
-        }
-    }
-
-    // Show categories management modal
-    function showManageCategories() {
-        document.getElementById('categoriesModal').classList.remove('hidden');
-        loadCategories();
-    }
-
-    // Hide categories modal
-    function hideCategoriesModal() {
-        document.getElementById('categoriesModal').classList.add('hidden');
-    }
-
-    // Load categories for management
-    async function loadCategories() {
-        try {
-            const response = await fetch(`${API_BASE}/categories`);
-            const categories = await response.json();
-
-            const container = document.getElementById('categoriesList');
-            container.innerHTML = categories.map(category => `
-                <div class="category-item">
-                    <div>
-                        <strong>${category.name}</strong>
-                        <br>
-                        <small>${category.description || 'No description'}</small>
-                    </div>
-                    <button onclick="deleteCategory(${category.id})" class="btn btn-danger">Delete</button>
-                </div>
-            `).join('');
-
-        } catch (error) {
-            console.error('Error loading categories:', error);
-        }
-    }
-
-    // Add new category
-    async function addCategory(event) {
-        event.preventDefault();
-
-        const token = localStorage.getItem('token');
-        const name = document.getElementById('categoryName').value.trim();
-        const description = document.getElementById('categoryDescription').value.trim();
-
-        if (!name) return;
-
-        try {
-            const response = await fetch(`${API_BASE}/categories`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ name, description })
-            });
-
-            if (response.ok) {
-                document.getElementById('categoryForm').reset();
-                loadCategories();
-            } else {
-                alert('Failed to add category');
-            }
-        } catch (error) {
-            console.error('Error adding category:', error);
-            alert('Failed to add category');
-        }
-    }
-
-    // Delete category
-    async function deleteCategory(categoryId) {
-        if (!confirm('Are you sure you want to delete this category?')) return;
-
-        const token = localStorage.getItem('token');
-
-        try {
-            const response = await fetch(`${API_BASE}/categories/${categoryId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.ok) {
-                loadCategories();
-            } else {
-                alert('Failed to delete category');
-            }
-        } catch (error) {
-            console.error('Error deleting category:', error);
-            alert('Failed to delete category');
-        }
-    }
-
-    // Export subscribers
-    async function exportSubscribers() {
-        const token = localStorage.getItem('token');
-
-        try {
-            const response = await fetch(`${API_BASE}/subscribers`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const subscribers = await response.json();
-
-            // Create CSV content
-            const csvContent = 'Email,Active,Created Date\n' +
-                subscribers.map(sub =>
-                    `${sub.email},${sub.active},${sub.createdAt}`
-                ).join('\n');
-
-            // Download CSV
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'subscribers.csv';
-            a.click();
-            window.URL.revokeObjectURL(url);
-
-        } catch (error) {
-            console.error('Error exporting subscribers:', error);
-            alert('Failed to export subscribers');
-        }
-    }
-
-    // Format date
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-    }
-
-    // Event listeners
-    document.getElementById('categoryForm').addEventListener('submit', addCategory);
-
-    // Close modal when clicking outside
-    document.getElementById('categoriesModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            hideCategoriesModal();
-        }
-    });
-
-    // Initialize dashboard
-    document.addEventListener('DOMContentLoaded', function() {
-        if (checkAuth()) {
-            loadStats();
-            loadRecentPosts();
-        }
-    });
-</script>
+    </footer>
 </body>
 </html>

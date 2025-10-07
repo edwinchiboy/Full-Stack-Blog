@@ -26,7 +26,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<Category> getCategoryById(@PathVariable String id) {
         return categoryService.getCategoryById(id)
             .map(category -> ResponseEntity.ok().body(category))
             .orElse(ResponseEntity.notFound().build());
@@ -51,7 +51,7 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long id,
+    public ResponseEntity<Category> updateCategory(@PathVariable String id,
                                                    @RequestBody CategoryRequest categoryRequest) {
         Category category = categoryService.updateCategory(
             id,
@@ -63,7 +63,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<?> deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.ok(new MessageResponse("Category deleted successfully!"));
     }

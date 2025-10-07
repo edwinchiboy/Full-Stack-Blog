@@ -35,6 +35,9 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private EmailNotificationService emailNotificationService;
+
     public Page<Post> getAllPublishedPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
         return postRepository.findByStatus(Post.PostStatus.PUBLISHED, pageable);
@@ -106,7 +109,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public Post updatePost(Long id, PostRequest postRequest) {
+    public Post updatePost(String id, PostRequest postRequest) {
         Post post = postRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -150,7 +153,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public void deletePost(Long id) {
+    public void deletePost(String id) {
         postRepository.deleteById(id);
     }
 
@@ -160,6 +163,59 @@ public class PostService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return postRepository.findByAuthorId(author.getId(), pageable);
+    }
+
+    public Post changePostStatus(String postId, Post.PostStatus newStatus) {
+        Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        Post.PostStatus oldStatus = post.getStatus();
+        post.setStatus(newStatus);
+
+        boolean isNewlyPublished = false;
+
+        // Set publishedAt when publishing for the first time
+        if (newStatus == Post.PostStatus.PUBLISHED && oldStatus != Post.PostStatus.PUBLISHED) {
+            if (post.getPublishedAt() == null) {
+                post.setPublishedAt(LocalDateTime.now());
+                isNewlyPublished = true;
+            }
+        }
+
+        Post savedPost = postRepository.save(post);
+
+        // Send email notifications to subscribers when publishing a new post
+        if (isNewlyPublished) {
+            try {
+                emailNotificationService.notifySubscribersOfNewPost(savedPost);
+            } catch (Exception e) {
+                // Log error but don't fail the post publication
+                // The notification can be retried or sent manually
+            }
+        }
+
+        return savedPost;
+    }
+
+    public Post hidePost(String postId) {
+        return changePostStatus(postId, Post.PostStatus.ARCHIVED);
+    }
+
+    public Post publishPost(String postId) {
+        return changePostStatus(postId, Post.PostStatus.PUBLISHED);
+    }
+
+    public Post draftPost(String postId) {
+        return changePostStatus(postId, Post.PostStatus.DRAFT);
+    }
+
+    public Page<Post> getAllPostsByStatus(Post.PostStatus status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return postRepository.findByStatus(status, pageable);
+    }
+
+    public Long countPostsByStatus(Post.PostStatus status) {
+        return postRepository.countByStatus(status);
     }
 
     private String generateSlug(String title) {

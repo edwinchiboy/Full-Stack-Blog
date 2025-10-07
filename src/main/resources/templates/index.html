@@ -3,344 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web3 Blog - Latest Posts and Insights</title>
-    <meta name="description" content="Stay updated with the latest Web3 trends, blockchain insights, and cryptocurrency news on our comprehensive blog platform.">
-    <meta name="keywords" content="web3, blockchain, cryptocurrency, DeFi, NFT, blog">
-    <link rel="stylesheet" href="css/styles.css">
+    <title>CryptoBlog - Web3 Insights & Blockchain News</title>
+    <meta name="description" content="Explore the latest insights on blockchain, DeFi, NFTs, and Web3 technology.">
+    <link rel="stylesheet" href="../static/css/styles.css">
 </head>
 <body>
-<header>
-    <div class="container">
-        <div class="header-content">
-            <a href="index.html" class="logo">Web3 Blog</a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="#" onclick="filterByCategory('all')">All Posts</a></li>
-                    <li><a href="#" onclick="filterByCategory('announcements')">Announcements</a></li>
-                    <li><a href="#" onclick="filterByCategory('guides')">Guides</a></li>
-                    <li><a href="#" onclick="filterByCategory('events')">Events</a></li>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header__container">
+            <a href="index.html" class="header__logo">CRYPTOBLOG</a>
+
+            <nav class="nav">
+                <ul class="nav__list">
+                    <li><a href="index.html" class="nav__link nav__link--active">Home</a></li>
+                    <li><a href="#posts" class="nav__link">Articles</a></li>
+                    <li><a href="dashboard.html" class="nav__link">Dashboard</a></li>
+                    <li><a href="#" class="nav__link">About</a></li>
                 </ul>
             </nav>
-            <div class="auth-buttons" id="authButtons">
-                <a href="login.html" class="btn btn-secondary">Login</a>
-                <a href="register.html" class="btn btn-primary">Register</a>
+
+            <div class="header__actions">
+                <a href="login.html" class="btn btn--secondary btn--small">Login</a>
+                <a href="register.html" class="btn btn--primary btn--small">Sign Up</a>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<main>
+    <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1>Welcome to Web3 Blog</h1>
-            <p>Discover the latest insights, guides, and updates in the Web3 ecosystem</p>
-            <div class="search-container">
-                <input type="text" class="search-input" id="searchInput" placeholder="Search posts...">
-                <button class="search-btn" onclick="searchPosts()">🔍</button>
+            <div class="hero__content">
+                <h1 class="hero__title">Explore the Future of Web3</h1>
+                <p class="hero__subtitle">Deep insights into blockchain technology, DeFi protocols, NFTs, and the decentralized web</p>
+
+                <div class="search-bar">
+                    <input type="text" class="search-bar__input" placeholder="Search articles, topics, or categories..." aria-label="Search">
+                    <button class="btn btn--primary btn--small search-bar__button" type="button">Search</button>
+                </div>
             </div>
         </div>
     </section>
 
-    <div class="container">
-        <div class="d-flex gap-3" style="flex-wrap: wrap;">
-            <!-- Main Content -->
-            <div style="flex: 1; min-width: 300px;">
-                <div id="loading" class="loading hidden">
-                    <div class="spinner"></div>
-                    <p>Loading posts...</p>
+    <!-- Main Content -->
+    <main>
+        <!-- Featured Posts -->
+        <section class="section" id="posts">
+            <div class="container">
+                <div class="flex justify-between items-center mb-2xl">
+                    <h2 class="mb-0">Latest Articles</h2>
+                    <a href="#" class="btn btn--ghost">View All →</a>
                 </div>
 
-                <div id="postsContainer" class="posts-grid">
-                    <!-- Posts will be loaded here -->
+                <div class="grid grid--posts">
+                    <!-- Post Card 1 -->
+                    <article class="card post-card">
+                        <span class="post-card__category">DeFi</span>
+                        <h3 class="post-card__title">
+                            <a href="post.html">Understanding Liquidity Pools and Automated Market Makers</a>
+                        </h3>
+                        <p class="post-card__excerpt">
+                            Explore the fundamentals of liquidity pools, how AMMs work, and their critical role in decentralized finance protocols. Learn about risks, rewards, and best practices.
+                        </p>
+                        <div class="post-card__meta">
+                            <div class="post-card__author">
+                                <span>By Alex Chen</span>
+                            </div>
+                            <span class="post-card__date">Mar 15, 2025</span>
+                        </div>
+                    </article>
+
+                    <!-- Post Card 2 -->
+                    <article class="card post-card">
+                        <span class="post-card__category">NFTs</span>
+                        <h3 class="post-card__title">
+                            <a href="post.html">The Evolution of NFT Marketplaces in 2025</a>
+                        </h3>
+                        <p class="post-card__excerpt">
+                            Discover how NFT platforms are revolutionizing digital ownership with new features like dynamic NFTs, fractionalization, and cross-chain compatibility.
+                        </p>
+                        <div class="post-card__meta">
+                            <div class="post-card__author">
+                                <span>By Sarah Miller</span>
+                            </div>
+                            <span class="post-card__date">Mar 14, 2025</span>
+                        </div>
+                    </article>
+
+                    <!-- Post Card 3 -->
+                    <article class="card post-card">
+                        <span class="post-card__category">Blockchain</span>
+                        <h3 class="post-card__title">
+                            <a href="post.html">Layer 2 Scaling: The Future of Ethereum</a>
+                        </h3>
+                        <p class="post-card__excerpt">
+                            An in-depth analysis of zkRollups, Optimistic Rollups, and other Layer 2 solutions that are making blockchain technology faster and more affordable.
+                        </p>
+                        <div class="post-card__meta">
+                            <div class="post-card__author">
+                                <span>By Mike Johnson</span>
+                            </div>
+                            <span class="post-card__date">Mar 13, 2025</span>
+                        </div>
+                    </article>
+
+                    <!-- Post Card 4 -->
+                    <article class="card post-card">
+                        <span class="post-card__category">Trading</span>
+                        <h3 class="post-card__title">
+                            <a href="post.html">Advanced Crypto Trading Strategies for 2025</a>
+                        </h3>
+                        <p class="post-card__excerpt">
+                            Master technical analysis, risk management, and profitable trading strategies for navigating volatile cryptocurrency markets with confidence.
+                        </p>
+                        <div class="post-card__meta">
+                            <div class="post-card__author">
+                                <span>By Emma Rodriguez</span>
+                            </div>
+                            <span class="post-card__date">Mar 12, 2025</span>
+                        </div>
+                    </article>
+
+                    <!-- Post Card 5 -->
+                    <article class="card post-card">
+                        <span class="post-card__category">Security</span>
+                        <h3 class="post-card__title">
+                            <a href="post.html">Essential Security Practices for Crypto Holders</a>
+                        </h3>
+                        <p class="post-card__excerpt">
+                            Learn critical security measures to protect your digital assets, from hardware wallets to smart contract audits and phishing prevention.
+                        </p>
+                        <div class="post-card__meta">
+                            <div class="post-card__author">
+                                <span>By David Kim</span>
+                            </div>
+                            <span class="post-card__date">Mar 11, 2025</span>
+                        </div>
+                    </article>
+
+                    <!-- Post Card 6 -->
+                    <article class="card post-card">
+                        <span class="post-card__category">Web3</span>
+                        <h3 class="post-card__title">
+                            <a href="post.html">Building dApps: A Complete Developer Guide</a>
+                        </h3>
+                        <p class="post-card__excerpt">
+                            Step-by-step tutorial on creating decentralized applications, covering smart contracts, Web3.js integration, and frontend development best practices.
+                        </p>
+                        <div class="post-card__meta">
+                            <div class="post-card__author">
+                                <span>By Lisa Thompson</span>
+                            </div>
+                            <span class="post-card__date">Mar 10, 2025</span>
+                        </div>
+                    </article>
                 </div>
 
                 <!-- Pagination -->
-                <div id="pagination" class="pagination">
-                    <!-- Pagination buttons will be added here -->
+                <div class="pagination">
+                    <button class="pagination__button" disabled aria-label="Previous page">← Prev</button>
+                    <button class="pagination__button pagination__button--active" aria-label="Page 1" aria-current="page">1</button>
+                    <button class="pagination__button" aria-label="Page 2">2</button>
+                    <button class="pagination__button" aria-label="Page 3">3</button>
+                    <button class="pagination__button" aria-label="Page 4">4</button>
+                    <button class="pagination__button" aria-label="Next page">Next →</button>
                 </div>
             </div>
+        </section>
 
-            <!-- Sidebar -->
-            <aside style="width: 300px; min-width: 250px;">
-                <!-- Categories -->
-                <div class="sidebar">
-                    <h3>Categories</h3>
-                    <ul id="categoriesList">
-                        <!-- Categories will be loaded here -->
-                    </ul>
+        <!-- Popular Topics -->
+        <section class="section">
+            <div class="container">
+                <h2 class="text-center mb-2xl">Popular Topics</h2>
+                <div class="tag-list" style="justify-content: center;">
+                    <a href="#" class="tag">Bitcoin</a>
+                    <a href="#" class="tag">Ethereum</a>
+                    <a href="#" class="tag">DeFi</a>
+                    <a href="#" class="tag">NFTs</a>
+                    <a href="#" class="tag">Smart Contracts</a>
+                    <a href="#" class="tag">Staking</a>
+                    <a href="#" class="tag">Layer 2</a>
+                    <a href="#" class="tag">Web3</a>
+                    <a href="#" class="tag">DAO</a>
+                    <a href="#" class="tag">Metaverse</a>
                 </div>
+            </div>
+        </section>
 
-                <!-- Popular Tags -->
-                <div class="sidebar">
-                    <h3>Popular Tags</h3>
-                    <div id="tagsList" class="tags">
-                        <!-- Tags will be loaded here -->
-                    </div>
-                </div>
+        <!-- Newsletter -->
+        <section class="section">
+            <div class="container container--narrow">
+                <div class="card" style="text-align: center;">
+                    <h2 class="mb-lg">Subscribe to Our Newsletter</h2>
+                    <p class="mb-xl" style="color: var(--color-text-secondary);">Get weekly insights and updates delivered to your inbox</p>
 
-                <!-- Newsletter Subscription -->
-                <div class="newsletter">
-                    <h3>Stay Updated</h3>
-                    <p>Subscribe to our newsletter for the latest Web3 insights</p>
-                    <form class="newsletter-form" id="subscribeForm">
-                        <input type="email" class="newsletter-input" id="subscribeEmail" placeholder="Your email address" required>
-                        <button type="submit" class="btn btn-success">Subscribe</button>
+                    <form style="max-width: 500px; margin: 0 auto;">
+                        <div class="flex gap-md" style="flex-direction: column;">
+                            <input type="email" class="form-input" placeholder="your@email.com" required aria-label="Email address">
+                            <button type="submit" class="btn btn--primary w-full">Subscribe Now</button>
+                        </div>
                     </form>
                 </div>
-            </aside>
-        </div>
-    </div>
-</main>
+            </div>
+        </section>
+    </main>
 
-<footer>
-    <div class="container">
-        <div class="footer-content">
-            <p>&copy; 2025 Web3 Blog. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Contact</a>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <p class="footer__text">&copy; 2025 CryptoBlog. All rights reserved.</p>
+                <ul class="footer__links">
+                    <li><a href="#" class="footer__link">Privacy Policy</a></li>
+                    <li><a href="#" class="footer__link">Terms of Service</a></li>
+                    <li><a href="#" class="footer__link">Contact</a></li>
+                </ul>
             </div>
         </div>
-    </div>
-</footer>
-
-<script>
-    const API_BASE = 'http://localhost:8080/api';
-    let currentPage = 0;
-    let currentCategory = null;
-    let currentSearch = null;
-
-    // Check authentication status
-    function checkAuth() {
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-        const authButtons = document.getElementById('authButtons');
-
-        if (token && user.username) {
-            authButtons.innerHTML = `
-                <span>Welcome, ${user.username}</span>
-                ${user.roles && user.roles.includes('ROLE_ADMIN') ?
-                    '<a href="dashboard.html" class="btn btn-primary">Dashboard</a>' : ''}
-                <button onclick="logout()" class="btn btn-secondary">Logout</button>
-            `;
-        }
-    }
-
-    // Logout function
-    function logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        location.reload();
-    }
-
-    // Load posts
-    async function loadPosts(page = 0, category = null, search = null) {
-        const loading = document.getElementById('loading');
-        const container = document.getElementById('postsContainer');
-
-        loading.classList.remove('hidden');
-
-        try {
-            let url = `${API_BASE}/posts?page=${page}&size=6`;
-
-            if (category && category !== 'all') {
-                // Get category ID first
-                const categoriesResponse = await fetch(`${API_BASE}/categories`);
-                const categories = await categoriesResponse.json();
-                const categoryObj = categories.find(c => c.slug === category);
-                if (categoryObj) {
-                    url = `${API_BASE}/posts/category/${categoryObj.id}?page=${page}&size=6`;
-                }
-            } else if (search) {
-                url = `${API_BASE}/posts/search?keyword=${encodeURIComponent(search)}&page=${page}&size=6`;
-            }
-
-            const response = await fetch(url);
-            const data = await response.json();
-
-            displayPosts(data.content);
-            displayPagination(data);
-
-        } catch (error) {
-            console.error('Error loading posts:', error);
-            container.innerHTML = '<p class="text-center">Error loading posts. Please try again later.</p>';
-        } finally {
-            loading.classList.add('hidden');
-        }
-    }
-
-    // Display posts
-    function displayPosts(posts) {
-        const container = document.getElementById('postsContainer');
-
-        if (!posts || posts.length === 0) {
-            container.innerHTML = '<p class="text-center">No posts found.</p>';
-            return;
-        }
-
-        container.innerHTML = posts.map(post => `
-            <article class="card fade-in">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <a href="post.html?slug=${post.slug}" style="text-decoration: none; color: inherit;">
-                            ${post.title}
-                        </a>
-                    </h2>
-                    <div class="card-meta">
-                        <span>By ${post.author?.username || 'Admin'}</span>
-                        <span>${formatDate(post.publishedAt || post.createdAt)}</span>
-                        ${post.category ? `<span class="category">${post.category.name}</span>` : ''}
-                    </div>
-                </div>
-                <div class="card-content">
-                    <p>${post.excerpt || truncateText(post.content, 150)}</p>
-                    ${post.tags && post.tags.length > 0 ? `
-                        <div class="tags">
-                            ${post.tags.map(tag => `<span class="tag">${tag.name}</span>`).join('')}
-                        </div>
-                    ` : ''}
-                    <a href="post.html?slug=${post.slug}" class="btn btn-primary mt-2">Read More</a>
-                </div>
-            </article>
-        `).join('');
-    }
-
-    // Display pagination
-    function displayPagination(data) {
-        const pagination = document.getElementById('pagination');
-
-        if (data.totalPages <= 1) {
-            pagination.innerHTML = '';
-            return;
-        }
-
-        let paginationHTML = '';
-
-        // Previous button
-        if (!data.first) {
-            paginationHTML += `<button class="page-btn" onclick="changePage(${data.number - 1})">Previous</button>`;
-        }
-
-        // Page numbers
-        for (let i = Math.max(0, data.number - 2); i <= Math.min(data.totalPages - 1, data.number + 2); i++) {
-            paginationHTML += `
-                <button class="page-btn ${i === data.number ? 'active' : ''}" onclick="changePage(${i})">
-                    ${i + 1}
-                </button>
-            `;
-        }
-
-        // Next button
-        if (!data.last) {
-            paginationHTML += `<button class="page-btn" onclick="changePage(${data.number + 1})">Next</button>`;
-        }
-
-        pagination.innerHTML = paginationHTML;
-    }
-
-    // Change page
-    function changePage(page) {
-        currentPage = page;
-        loadPosts(page, currentCategory, currentSearch);
-    }
-
-    // Filter by category
-    function filterByCategory(category) {
-        currentCategory = category;
-        currentPage = 0;
-        currentSearch = null;
-        document.getElementById('searchInput').value = '';
-        loadPosts(0, category);
-    }
-
-    // Search posts
-    function searchPosts() {
-        const searchTerm = document.getElementById('searchInput').value.trim();
-        if (searchTerm) {
-            currentSearch = searchTerm;
-            currentCategory = null;
-            currentPage = 0;
-            loadPosts(0, null, searchTerm);
-        }
-    }
-
-    // Load categories
-    async function loadCategories() {
-        try {
-            const response = await fetch(`${API_BASE}/categories`);
-            const categories = await response.json();
-
-            const container = document.getElementById('categoriesList');
-            container.innerHTML = categories.map(category => `
-                <li><a href="#" onclick="filterByCategory('${category.slug}')">${category.name}</a></li>
-            `).join('');
-
-        } catch (error) {
-            console.error('Error loading categories:', error);
-        }
-    }
-
-    // Subscribe to newsletter
-    async function handleSubscribe(event) {
-        event.preventDefault();
-
-        const email = document.getElementById('subscribeEmail').value;
-
-        try {
-            const response = await fetch(`${API_BASE}/subscribers/subscribe`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email })
-            });
-
-            if (response.ok) {
-                alert('Successfully subscribed to newsletter!');
-                document.getElementById('subscribeEmail').value = '';
-            } else {
-                const error = await response.json();
-                alert(error.message || 'Subscription failed. Please try again.');
-            }
-        } catch (error) {
-            console.error('Error subscribing:', error);
-            alert('Subscription failed. Please try again.');
-        }
-    }
-
-    // Utility functions
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-    }
-
-    function truncateText(text, length) {
-        if (text.length <= length) return text;
-        return text.substring(0, length).trim() + '...';
-    }
-
-    // Event listeners
-    document.getElementById('subscribeForm').addEventListener('submit', handleSubscribe);
-
-    document.getElementById('searchInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchPosts();
-        }
-    });
-
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', function() {
-        checkAuth();
-        loadPosts();
-        loadCategories();
-    });
-</script>
+    </footer>
 </body>
 </html>

@@ -79,7 +79,7 @@ public class PostController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Post> updatePost(@PathVariable Long id,
+    public ResponseEntity<Post> updatePost(@PathVariable String id,
                                            @Valid @RequestBody PostRequest postRequest) {
         Post post = postService.updatePost(id, postRequest);
         return ResponseEntity.ok(post);
@@ -87,7 +87,7 @@ public class PostController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deletePost(@PathVariable Long id) {
+    public ResponseEntity<?> deletePost(@PathVariable String id) {
         postService.deletePost(id);
         return ResponseEntity.ok(new MessageResponse("Post deleted successfully!"));
     }
@@ -99,6 +99,39 @@ public class PostController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size) {
         Page<Post> posts = postService.getPostsByAuthor(username, page, size);
+        return ResponseEntity.ok(posts);
+    }
+
+    // Post visibility management endpoints
+    @PatchMapping("/{id}/hide")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Post> hidePost(@PathVariable String id) {
+        Post post = postService.hidePost(id);
+        return ResponseEntity.ok(post);
+    }
+
+    @PatchMapping("/{id}/publish")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Post> publishPost(@PathVariable String id) {
+        Post post = postService.publishPost(id);
+        return ResponseEntity.ok(post);
+    }
+
+    @PatchMapping("/{id}/draft")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Post> draftPost(@PathVariable String id) {
+        Post post = postService.draftPost(id);
+        return ResponseEntity.ok(post);
+    }
+
+    @GetMapping("/status/{status}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<Post>> getPostsByStatus(
+        @PathVariable String status,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+        Post.PostStatus postStatus = Post.PostStatus.valueOf(status.toUpperCase());
+        Page<Post> posts = postService.getAllPostsByStatus(postStatus, page, size);
         return ResponseEntity.ok(posts);
     }
 

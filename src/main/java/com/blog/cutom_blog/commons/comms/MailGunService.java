@@ -14,11 +14,14 @@ import java.time.Instant;
 @Component
 public class MailGunService {
     private final MailgunMessagesApi mailgunMessagesApi;
+    private final String mailgunDomain;
 
 
     public MailGunService(
-        MailgunMessagesApi mailgunMessagesApi) {
+        MailgunMessagesApi mailgunMessagesApi,
+        @org.springframework.beans.factory.annotation.Value("${mailgun.domain:sandboxXXX.mailgun.org}") String mailgunDomain) {
         this.mailgunMessagesApi = mailgunMessagesApi;
+        this.mailgunDomain = mailgunDomain;
     }
 
 
@@ -47,7 +50,7 @@ public class MailGunService {
 
         Message message = messageBuilder.build();
 
-        MessageResponse response = mailgunMessagesApi.sendMessage(mailGunConfig.getDomain(), message);
+        MessageResponse response = mailgunMessagesApi.sendMessage(mailgunDomain, message);
 
         if (response == null || response.getId() == null) {
             throw new RuntimeException("Failed to send email through Mailgun");

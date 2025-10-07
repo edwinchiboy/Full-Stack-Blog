@@ -32,7 +32,7 @@ public class CommentService {
         return commentRepository.findByPostId(postId, pageable);
     }
 
-    public Comment createComment(Long postId, CommentRequest commentRequest, String username) {
+    public Comment createComment(String postId, CommentRequest commentRequest, String username) {
         Post post = postRepository.findById(postId)
             .orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -47,7 +47,7 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public void deleteComment(Long commentId) {
+    public void deleteComment(String commentId) {
         commentRepository.deleteById(commentId);
     }
 

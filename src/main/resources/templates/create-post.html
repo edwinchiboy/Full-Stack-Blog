@@ -3,567 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Post - Web3 Blog</title>
-    <meta name="description" content="Create and edit blog posts for Web3 Blog.">
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Create New Post - CryptoBlog</title>
+    <meta name="description" content="Create and publish a new blog post">
+    <link rel="stylesheet" href="../static/css/styles.css">
 </head>
 <body>
-<header>
-    <div class="container">
-        <div class="header-content">
-            <a href="index.html" class="logo">Web3 Blog</a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">View Site</a></li>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                    <li><a href="create-post.html" class="active">New Post</a></li>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header__container">
+            <a href="index.html" class="header__logo">CRYPTOBLOG</a>
+
+            <nav class="nav">
+                <ul class="nav__list">
+                    <li><a href="index.html" class="nav__link">Home</a></li>
+                    <li><a href="dashboard.html" class="nav__link">Dashboard</a></li>
+                    <li><a href="create-post.html" class="nav__link nav__link--active">New Post</a></li>
                 </ul>
             </nav>
-            <div class="auth-buttons" id="authButtons">
-                <!-- Will be populated by JavaScript -->
+
+            <div class="header__actions">
+                <div class="header__user">
+                    <span>Welcome, Admin</span>
+                </div>
+                <button class="btn btn--secondary btn--small">Logout</button>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<main>
-    <div class="container">
-        <div class="form-container" style="max-width: 800px;">
-            <h2 id="formTitle">Create New Post</h2>
+    <!-- Main Content -->
+    <main class="section">
+        <div class="container container--narrow">
+            <div class="flex justify-between items-center mb-2xl">
+                <h1 class="mb-0">Create New Post</h1>
+                <a href="dashboard.html" class="btn btn--ghost">← Back to Dashboard</a>
+            </div>
 
-            <div id="alertContainer"></div>
-
-            <form id="postForm">
-                <div class="form-group">
-                    <label for="featuredImage">Featured Image URL</label>
-                    <input type="url" id="featuredImage" class="form-control" placeholder="https://example.com/image.jpg">
-                </div>
-
-                <div class="form-group">
-                    <label for="content">Content *</label>
-                    <textarea id="content" class="form-control rich-editor" required placeholder="Write your post content here...
-
-You can use simple formatting:
-
-**Bold text**
-*Italic text*
-
-# Heading 1
-## Heading 2
-### Heading 3
-
-- List item 1
-- List item 2
-
-[Link text](https://example.com)
-
-> This is a quote"></textarea>
-                    <small>You can use Markdown-like syntax for formatting</small>
-                </div>
-
-                <!-- SEO Section -->
-                <div class="card" style="margin: 2rem 0;">
-                    <div class="card-header">
-                        <h4>SEO Settings</h4>
+            <div class="card">
+                <form>
+                    <!-- Title -->
+                    <div class="form-group">
+                        <label for="title" class="form-label">Post Title</label>
+                        <input
+                            type="text"
+                            id="title"
+                            class="form-input"
+                            placeholder="Enter an engaging title..."
+                            required>
                     </div>
-                    <div class="card-content">
+
+                    <!-- Subtitle -->
+                    <div class="form-group">
+                        <label for="subtitle" class="form-label">Subtitle (Optional)</label>
+                        <input
+                            type="text"
+                            id="subtitle"
+                            class="form-input"
+                            placeholder="Add a descriptive subtitle...">
+                        <span class="form-hint">A brief description that appears below the title</span>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label for="category" class="form-label">Category</label>
+                        <select id="category" class="form-select" required>
+                            <option value="">Select a category</option>
+                            <option value="defi">DeFi</option>
+                            <option value="nfts">NFTs</option>
+                            <option value="blockchain">Blockchain</option>
+                            <option value="trading">Trading</option>
+                            <option value="security">Security</option>
+                            <option value="web3">Web3</option>
+                        </select>
+                    </div>
+
+                    <!-- Featured Image -->
+                    <div class="form-group">
+                        <label for="featured-image" class="form-label">Featured Image URL</label>
+                        <input
+                            type="url"
+                            id="featured-image"
+                            class="form-input"
+                            placeholder="https://example.com/image.jpg">
+                        <span class="form-hint">Link to the main image for this post</span>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="form-group">
+                        <label for="tags" class="form-label">Tags</label>
+                        <input
+                            type="text"
+                            id="tags"
+                            class="form-input"
+                            placeholder="DeFi, Liquidity Pools, AMM...">
+                        <span class="form-hint">Separate tags with commas</span>
+                    </div>
+
+                    <!-- Excerpt -->
+                    <div class="form-group">
+                        <label for="excerpt" class="form-label">Excerpt</label>
+                        <textarea
+                            id="excerpt"
+                            class="form-textarea"
+                            style="min-height: 100px;"
+                            placeholder="Write a short summary that will appear on post cards..."
+                            required></textarea>
+                        <span class="form-hint">Keep it under 200 characters for best display</span>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="form-group">
+                        <label for="content" class="form-label">Post Content</label>
+                        <textarea
+                            id="content"
+                            class="form-textarea"
+                            style="min-height: 400px;"
+                            placeholder="Write your article content here. You can use Markdown formatting..."
+                            required></textarea>
+                        <span class="form-hint">Supports Markdown formatting</span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="form-group">
+                        <label for="status" class="form-label">Publication Status</label>
+                        <select id="status" class="form-select" required>
+                            <option value="draft">Save as Draft</option>
+                            <option value="published">Publish Immediately</option>
+                            <option value="scheduled">Schedule for Later</option>
+                        </select>
+                    </div>
+
+                    <!-- SEO Settings -->
+                    <div class="card" style="background: var(--color-bg-elevated); padding: var(--space-xl); margin-bottom: var(--space-xl);">
+                        <h3 class="mb-lg">SEO Settings</h3>
+
                         <div class="form-group">
-                            <label for="metaDescription">Meta Description</label>
-                            <textarea id="metaDescription" class="form-control" rows="3" maxlength="160" placeholder="Brief description for search engines (160 characters max)"></textarea>
+                            <label for="meta-title" class="form-label">Meta Title</label>
+                            <input
+                                type="text"
+                                id="meta-title"
+                                class="form-input"
+                                placeholder="Optional - defaults to post title">
                         </div>
 
-                        <div class="form-group">
-                            <label for="metaKeywords">Meta Keywords</label>
-                            <input type="text" id="metaKeywords" class="form-control" maxlength="200" placeholder="keyword1, keyword2, keyword3">
+                        <div class="form-group mb-0">
+                            <label for="meta-description" class="form-label">Meta Description</label>
+                            <textarea
+                                id="meta-description"
+                                class="form-textarea"
+                                style="min-height: 80px;"
+                                placeholder="Optional - defaults to excerpt"></textarea>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="status">Status</label>
-                    <select id="status" class="form-control">
-                        <option value="DRAFT">Draft</option>
-                        <option value="PUBLISHED">Published</option>
-                    </select>
-                </div>
-
-                <div class="d-flex gap-2" style="flex-wrap: wrap;">
-                    <button type="submit" class="btn btn-primary" id="submitBtn">Save Post</button>
-                    <button type="button" class="btn btn-secondary" onclick="saveDraft()">Save as Draft</button>
-                    <a href="dashboard.html" class="btn btn-secondary">Cancel</a>
-                    <button type="button" class="btn btn-success" onclick="previewPost()" id="previewBtn">Preview</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Preview Modal -->
-    <div id="previewModal" class="modal hidden">
-        <div class="modal-content" style="max-width: 900px;">
-            <div class="modal-header">
-                <h3>Post Preview</h3>
-                <button onclick="hidePreview()" class="btn btn-secondary">×</button>
-            </div>
-            <div class="modal-body">
-                <article class="card">
-                    <div class="card-header">
-                        <h1 id="previewTitle" class="card-title"></h1>
-                        <div id="previewMeta" class="card-meta"></div>
-                        <div id="previewCategory"></div>
+                    <!-- Action Buttons -->
+                    <div class="flex gap-md" style="flex-wrap: wrap;">
+                        <button type="submit" class="btn btn--primary">Publish Post</button>
+                        <button type="button" class="btn btn--secondary">Save as Draft</button>
+                        <button type="button" class="btn btn--ghost">Preview</button>
+                        <a href="dashboard.html" class="btn btn--ghost">Cancel</a>
                     </div>
-                    <div id="previewImage" class="hidden">
-                        <img id="previewFeaturedImage" src="" alt="" style="width: 100%; height: 300px; object-fit: cover; border-radius: 10px; margin-bottom: 2rem;">
-                    </div>
-                    <div id="previewContent" class="card-content"></div>
-                    <div id="previewTags" class="tags"></div>
-                </article>
+                </form>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<footer>
-    <div class="container">
-        <div class="footer-content">
-            <p>&copy; 2025 Web3 Blog. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
-
-<style>
-    /* Modal styles */
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        overflow-y: auto;
-        padding: 2rem 1rem;
-    }
-
-    .modal-content {
-        background: white;
-        border-radius: 10px;
-        width: 90%;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid #e9ecef;
-        position: sticky;
-        top: 0;
-        background: white;
-        z-index: 1;
-    }
-
-    .modal-body {
-        padding: 1rem;
-    }
-
-    .rich-editor {
-        font-family: 'Courier New', monospace;
-        line-height: 1.6;
-    }
-
-    .char-counter {
-        font-size: 0.8rem;
-        color: #6c757d;
-        text-align: right;
-        margin-top: 0.25rem;
-    }
-</style>
-
-<script>
-    const API_BASE = 'http://localhost:8080/api';
-    let isEditing = false;
-    let editingPostId = null;
-
-    // Check authentication and admin role
-    function checkAuth() {
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-        if (!token || !user.roles || !user.roles.includes('ROLE_ADMIN')) {
-            window.location.href = 'login.html';
-            return false;
-        }
-
-        // Update auth buttons
-        document.getElementById('authButtons').innerHTML = `
-            <span>Welcome, ${user.username}</span>
-            <button onclick="logout()" class="btn btn-secondary">Logout</button>
-        `;
-
-        return true;
-    }
-
-    // Check if editing existing post
-    function checkEditMode() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const postId = urlParams.get('id');
-
-        if (postId) {
-            isEditing = true;
-            editingPostId = postId;
-            document.getElementById('formTitle').textContent = 'Edit Post';
-            loadPostForEditing(postId);
-        }
-    }
-
-    // Logout function
-    function logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = 'index.html';
-    }
-
-    // Show alert message
-    function showAlert(message, type = 'error') {
-        const alertContainer = document.getElementById('alertContainer');
-        alertContainer.innerHTML = `
-            <div class="alert alert-${type === 'error' ? 'error' : 'success'}">
-                ${message}
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <p class="footer__text">&copy; 2025 CryptoBlog. All rights reserved.</p>
+                <ul class="footer__links">
+                    <li><a href="#" class="footer__link">Privacy Policy</a></li>
+                    <li><a href="#" class="footer__link">Terms of Service</a></li>
+                    <li><a href="#" class="footer__link">Contact</a></li>
+                </ul>
             </div>
-        `;
-
-        // Auto-hide success messages
-        if (type === 'success') {
-            setTimeout(() => {
-                alertContainer.innerHTML = '';
-            }, 3000);
-        }
-    }
-
-    // Load categories
-    async function loadCategories() {
-        try {
-            const response = await fetch(`${API_BASE}/categories`);
-            const categories = await response.json();
-
-            const select = document.getElementById('category');
-            select.innerHTML = '<option value="">Select Category</option>' +
-                categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
-
-        } catch (error) {
-            console.error('Error loading categories:', error);
-        }
-    }
-
-    // Load post for editing
-    async function loadPostForEditing(postId) {
-        const token = localStorage.getItem('token');
-
-        try {
-            const response = await fetch(`${API_BASE}/posts/${postId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (!response.ok) {
-                throw new Error('Post not found');
-            }
-
-            const post = await response.json();
-
-            // Populate form fields
-            document.getElementById('title').value = post.title || '';
-            document.getElementById('excerpt').value = post.excerpt || '';
-            document.getElementById('content').value = post.content || '';
-            document.getElementById('featuredImage').value = post.featuredImage || '';
-            document.getElementById('metaDescription').value = post.metaDescription || '';
-            document.getElementById('metaKeywords').value = post.metaKeywords || '';
-            document.getElementById('status').value = post.status || 'DRAFT';
-
-            if (post.category) {
-                setTimeout(() => {
-                    document.getElementById('category').value = post.category.id;
-                }, 500);
-            }
-
-            if (post.tags && post.tags.length > 0) {
-                document.getElementById('tags').value = post.tags.map(tag => tag.name).join(', ');
-            }
-
-        } catch (error) {
-            console.error('Error loading post:', error);
-            showAlert('Error loading post for editing');
-        }
-    }
-
-    // Handle form submission
-    async function handleSubmit(event) {
-        event.preventDefault();
-
-        const token = localStorage.getItem('token');
-        const submitBtn = document.getElementById('submitBtn');
-
-        // Gather form data
-        const formData = {
-            title: document.getElementById('title').value.trim(),
-            excerpt: document.getElementById('excerpt').value.trim(),
-            content: document.getElementById('content').value.trim(),
-            featuredImage: document.getElementById('featuredImage').value.trim(),
-            metaDescription: document.getElementById('metaDescription').value.trim(),
-            metaKeywords: document.getElementById('metaKeywords').value.trim(),
-            status: document.getElementById('status').value,
-            categoryId: document.getElementById('category').value || null,
-            tags: document.getElementById('tags').value.split(',').map(tag => tag.trim()).filter(tag => tag)
-        };
-
-        if (!formData.title || !formData.content) {
-            showAlert('Title and content are required');
-            return;
-        }
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = isEditing ? 'Updating...' : 'Saving...';
-
-        try {
-            const url = isEditing ? `${API_BASE}/posts/${editingPostId}` : `${API_BASE}/posts`;
-            const method = isEditing ? 'PUT' : 'POST';
-
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-
-            if (response.ok) {
-                const post = await response.json();
-                showAlert(isEditing ? 'Post updated successfully!' : 'Post created successfully!', 'success');
-
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1500);
-            } else {
-                const error = await response.json();
-                showAlert(error.message || 'Failed to save post');
-            }
-
-        } catch (error) {
-            console.error('Error saving post:', error);
-            showAlert('Network error. Please try again.');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Save Post';
-        }
-    }
-
-    // Save as draft
-    async function saveDraft() {
-        document.getElementById('status').value = 'DRAFT';
-        document.getElementById('postForm').dispatchEvent(new Event('submit'));
-    }
-
-    // Preview post
-    function previewPost() {
-        const title = document.getElementById('title').value || 'Untitled Post';
-        const content = document.getElementById('content').value || 'No content';
-        const excerpt = document.getElementById('excerpt').value;
-        const featuredImage = document.getElementById('featuredImage').value;
-        const category = document.getElementById('category');
-        const categoryText = category.options[category.selectedIndex].text;
-        const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
-
-        // Update preview
-        document.getElementById('previewTitle').textContent = title;
-        document.getElementById('previewMeta').innerHTML = `
-            <span>By Admin</span>
-            <span>${new Date().toLocaleDateString()}</span>
-        `;
-
-        if (categoryText && categoryText !== 'Select Category') {
-            document.getElementById('previewCategory').innerHTML = `<span class="category">${categoryText}</span>`;
-        } else {
-            document.getElementById('previewCategory').innerHTML = '';
-        }
-
-        if (featuredImage) {
-            document.getElementById('previewImage').classList.remove('hidden');
-            document.getElementById('previewFeaturedImage').src = featuredImage;
-            document.getElementById('previewFeaturedImage').alt = title;
-        } else {
-            document.getElementById('previewImage').classList.add('hidden');
-        }
-
-        document.getElementById('previewContent').innerHTML = formatContent(content);
-
-        if (tags.length > 0) {
-            document.getElementById('previewTags').innerHTML = tags.map(tag =>
-                `<span class="tag">${tag}</span>`
-            ).join('');
-        } else {
-            document.getElementById('previewTags').innerHTML = '';
-        }
-
-        document.getElementById('previewModal').classList.remove('hidden');
-    }
-
-    // Hide preview
-    function hidePreview() {
-        document.getElementById('previewModal').classList.add('hidden');
-    }
-
-    // Format content for preview (simple markdown-like formatting)
-    function formatContent(content) {
-        return content
-            // Headers
-            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-            // Bold and italic
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            // Links
-            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-            // Lists
-            .replace(/^- (.*$)/gm, '<li>$1</li>')
-            .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-            // Blockquotes
-            .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
-            // Paragraphs
-            .split('\n\n')
-            .map(paragraph => {
-                const trimmed = paragraph.trim();
-                if (trimmed && !trimmed.startsWith('<')) {
-                    return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
-                }
-                return trimmed;
-            })
-            .join('');
-    }
-
-    // Character counter for meta description
-    function updateCharCounter() {
-        const metaDesc = document.getElementById('metaDescription');
-        const counter = document.createElement('div');
-        counter.className = 'char-counter';
-        counter.textContent = `${metaDesc.value.length}/160`;
-
-        // Remove existing counter
-        const existing = metaDesc.parentNode.querySelector('.char-counter');
-        if (existing) existing.remove();
-
-        metaDesc.parentNode.appendChild(counter);
-
-        if (metaDesc.value.length > 160) {
-            counter.style.color = '#dc3545';
-        }
-    }
-
-    // Event listeners
-    document.getElementById('postForm').addEventListener('submit', handleSubmit);
-    document.getElementById('metaDescription').addEventListener('input', updateCharCounter);
-
-    // Close preview modal when clicking outside
-    document.getElementById('previewModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            hidePreview();
-        }
-    });
-
-    // Auto-save functionality (optional)
-    let autoSaveTimer;
-    function setupAutoSave() {
-        const inputs = ['title', 'excerpt', 'content', 'metaDescription', 'metaKeywords'];
-        inputs.forEach(id => {
-            document.getElementById(id).addEventListener('input', function() {
-                clearTimeout(autoSaveTimer);
-                autoSaveTimer = setTimeout(() => {
-                    // Save to localStorage as backup
-                    const formData = {};
-                    inputs.forEach(inputId => {
-                        formData[inputId] = document.getElementById(inputId).value;
-                    });
-                    localStorage.setItem('postDraft', JSON.stringify(formData));
-                }, 2000);
-            });
-        });
-    }
-
-    // Load draft from localStorage
-    function loadDraft() {
-        if (!isEditing) {
-            const draft = localStorage.getItem('postDraft');
-            if (draft) {
-                try {
-                    const formData = JSON.parse(draft);
-                    Object.keys(formData).forEach(key => {
-                        const element = document.getElementById(key);
-                        if (element && !element.value) {
-                            element.value = formData[key];
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error loading draft:', error);
-                }
-            }
-        }
-    }
-
-    // Clear draft on successful save
-    function clearDraft() {
-        localStorage.removeItem('postDraft');
-    }
-
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', function() {
-        if (checkAuth()) {
-            loadCategories();
-            checkEditMode();
-            setupAutoSave();
-            loadDraft();
-            updateCharCounter();
-        }
-    });
-
-    // Clear draft when leaving page after successful save
-    window.addEventListener('beforeunload', function() {
-        // Only clear draft if form is empty (user navigated away)
-        const title = document.getElementById('title').value.trim();
-        const content = document.getElementById('content').value.trim();
-        if (!title && !content) {
-            clearDraft();
-        }
-    });
-</script>
+        </div>
+    </footer>
 </body>
-</html>title">Title *</label>
-<input type="text" id="title" class="form-control" required maxlength="200">
-</div>
-
-<div class="form-group">
-    <label for="excerpt">Excerpt</label>
-    <textarea id="excerpt" class="form-control" rows="3" maxlength="500" placeholder="Brief summary of the post..."></textarea>
-</div>
-
-<div class="form-group">
-    <label for="category">Category</label>
-    <select id="category" class="form-control">
-        <option value="">Select Category</option>
-        <!-- Categories will be loaded here -->
-    </select>
-</div>
-
-<div class="form-group">
-    <label for="tags">Tags (comma separated)</label>
-    <input type="text" id="tags" class="form-control" placeholder="web3, blockchain, defi">
-    <small>Enter tags separated by commas</small>
-</div>
-
-<div class="form-group">
-    <label for="
+</html>

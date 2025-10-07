@@ -35,7 +35,7 @@ public class PostRequest {
 
     private String status = "DRAFT";
 
-    private Long categoryId;
+    private String categoryId;
 
     private Set<String> tags;
 }

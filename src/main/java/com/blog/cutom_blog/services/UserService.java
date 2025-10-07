@@ -35,7 +35,8 @@ public class UserService {
             .password(encoder.encode(password))
             .build();
 
-        Role userRole = roleRepository.findByName(signUpRequest.getRole())
+        // Default role is READER (regular user)
+        Role userRole = roleRepository.findByName(ERole.ROLE_READER)
             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 
         user.setRoleId(userRole.getId());
