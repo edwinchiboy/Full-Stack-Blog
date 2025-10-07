@@ -17,14 +17,22 @@
                 <ul class="nav__list">
                     <li><a href="index.html" class="nav__link nav__link--active">Home</a></li>
                     <li><a href="#posts" class="nav__link">Articles</a></li>
-                    <li><a href="dashboard.html" class="nav__link">Dashboard</a></li>
-                    <li><a href="#" class="nav__link">About</a></li>
+                    <li id="dashboard-nav-item" style="display: none;"><a href="dashboard.html" class="nav__link">Dashboard</a></li>
+                    <li><a href="about.html" class="nav__link">About</a></li>
                 </ul>
             </nav>
 
             <div class="header__actions">
-                <a href="login.html" class="btn btn--secondary btn--small">Login</a>
-                <a href="register.html" class="btn btn--primary btn--small">Sign Up</a>
+                <div id="guest-actions">
+                    <a href="login.html" class="btn btn--secondary btn--small">Login</a>
+                    <a href="register.html" class="btn btn--primary btn--small">Sign Up</a>
+                </div>
+                <div id="user-actions" style="display: none;">
+                    <div class="header__user">
+                        <span id="user-display-name">Welcome, User</span>
+                    </div>
+                    <button id="logout-btn" class="btn btn--secondary btn--small">Logout</button>
+                </div>
             </div>
         </div>
     </header>
@@ -213,12 +221,16 @@
             <div class="footer__content">
                 <p class="footer__text">&copy; 2025 CryptoBlog. All rights reserved.</p>
                 <ul class="footer__links">
-                    <li><a href="#" class="footer__link">Privacy Policy</a></li>
-                    <li><a href="#" class="footer__link">Terms of Service</a></li>
-                    <li><a href="#" class="footer__link">Contact</a></li>
+                    <li><a href="privacy.html" class="footer__link">Privacy Policy</a></li>
+                    <li><a href="terms.html" class="footer__link">Terms of Service</a></li>
+                    <li><a href="about.html" class="footer__link">Contact</a></li>
                 </ul>
             </div>
         </div>
     </footer>
+
+    <script src="../static/js/auth.js"></script>
+    <script src="../static/js/posts.js"></script>
+    <script src="../static/js/newsletter.js"></script>
 </body>
 </html>
