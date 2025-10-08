@@ -124,7 +124,7 @@ async function handleLogin(event) {
 
             // Redirect to dashboard
             setTimeout(() => {
-                window.location.href = 'dashboard.html';
+                window.location.href = '/dashboard';
             }, 1000);
         } else {
             // Show error message
@@ -221,7 +221,7 @@ function showOTPVerification() {
         <div class="auth-container">
             <div class="auth-card">
                 <div class="text-center mb-2xl">
-                    <a href="index.html" class="header__logo" style="font-size: var(--font-size-3xl);">CRYPTOBLOG</a>
+                    <a href="/" class="header__logo" style="font-size: var(--font-size-3xl);">CRYPTOBLOG</a>
                 </div>
 
                 <h2 class="auth-card__title">Verify Your Email</h2>
@@ -243,7 +243,7 @@ function showOTPVerification() {
                 </form>
 
                 <div class="auth-card__footer">
-                    <p><a href="register.html">← Back to registration</a></p>
+                    <p><a href="/register">← Back to registration</a></p>
                 </div>
             </div>
         </div>
@@ -337,7 +337,7 @@ async function completeSignup() {
             showNotification('Registration complete! Redirecting to login...', 'success');
 
             setTimeout(() => {
-                window.location.href = 'login.html';
+                window.location.href = '/login';
             }, 2000);
         } else {
             showNotification(result.message || 'Failed to complete registration', 'error');
@@ -390,7 +390,7 @@ function handleLogout() {
     Auth.clearAuth();
     showNotification('Logged out successfully', 'success');
     setTimeout(() => {
-        window.location.href = 'index.html';
+        window.location.href = '/';
     }, 1000);
 }
 
@@ -401,7 +401,7 @@ function protectAdminPage() {
     if (!Auth.isAuthenticated()) {
         showNotification('Please login to access this page', 'error');
         setTimeout(() => {
-            window.location.href = 'login.html';
+            window.location.href = '/login';
         }, 1500);
         return false;
     }
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateNavigation();
 
     // Login page
-    if (currentPage.includes('login.html')) {
+    if (currentPage.includes('login')) {
         const loginForm = document.querySelector('form');
         if (loginForm) {
             loginForm.addEventListener('submit', handleLogin);
@@ -579,12 +579,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Redirect if already logged in
         if (Auth.isAuthenticated()) {
-            window.location.href = 'dashboard.html';
+            window.location.href = '/dashboard';
         }
     }
 
     // Register page
-    if (currentPage.includes('register.html')) {
+    if (currentPage.includes('register')) {
         const registerForm = document.querySelector('form');
         if (registerForm) {
             registerForm.addEventListener('submit', handleRegistration);
@@ -592,12 +592,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Redirect if already logged in
         if (Auth.isAuthenticated()) {
-            window.location.href = 'dashboard.html';
+            window.location.href = '/dashboard';
         }
     }
 
     // Protected pages (dashboard, create-post)
-    if (currentPage.includes('dashboard.html') || currentPage.includes('create-post.html')) {
+    if (currentPage.includes('dashboard') || currentPage.includes('create-post')) {
         protectAdminPage();
     }
 

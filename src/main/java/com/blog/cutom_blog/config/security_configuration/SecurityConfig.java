@@ -66,12 +66,22 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // Authorization rules
             .authorizeHttpRequests(auth -> auth
+                // Public web pages
+                .requestMatchers("/", "/login", "/register", "/about", "/post", "/privacy", "/terms").permitAll()
+                // Static resources
+                .requestMatchers("/css/**", "/js/**", "/assets/**", "/static/**").permitAll()
+                // Public API endpoints
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/v1/registration/**").permitAll()
                 .requestMatchers("/api/posts/**").permitAll()
                 .requestMatchers("/api/categories/**").permitAll()
                 .requestMatchers("/api/tags/**").permitAll()
                 .requestMatchers("/api/subscribers/**").permitAll()
+                .requestMatchers("/api/password-reset/**").permitAll()
+                // Admin endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // Protected pages
+                .requestMatchers("/dashboard", "/create-post").authenticated()
                 .anyRequest().authenticated()
             );
 

@@ -5,27 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create New Post - CryptoBlog</title>
     <meta name="description" content="Create and publish a new blog post">
-    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="container header__container">
-            <a href="index.html" class="header__logo">CRYPTOBLOG</a>
+            <a href="/" class="header__logo">CRYPTOBLOG</a>
 
             <nav class="nav">
                 <ul class="nav__list">
-                    <li><a href="index.html" class="nav__link">Home</a></li>
-                    <li><a href="index.html#posts" class="nav__link">Articles</a></li>
-                    <li id="dashboard-nav-item"><a href="dashboard.html" class="nav__link">Dashboard</a></li>
-                    <li><a href="about.html" class="nav__link">About</a></li>
+                    <li><a href="/" class="nav__link">Home</a></li>
+                    <li><a href="/#posts" class="nav__link">Articles</a></li>
+                    <li id="dashboard-nav-item"><a href="/dashboard" class="nav__link">Dashboard</a></li>
+                    <li><a href="/about" class="nav__link">About</a></li>
                 </ul>
             </nav>
 
             <div class="header__actions">
                 <div id="guest-actions" style="display: none;">
-                    <a href="login.html" class="btn btn--secondary btn--small">Login</a>
-                    <a href="register.html" class="btn btn--primary btn--small">Sign Up</a>
+                    <a href="/login" class="btn btn--secondary btn--small">Login</a>
+                    <a href="/register" class="btn btn--primary btn--small">Sign Up</a>
                 </div>
                 <div id="user-actions">
                     <div class="header__user">
@@ -42,7 +42,7 @@
         <div class="container container--narrow">
             <div class="flex justify-between items-center mb-2xl">
                 <h1 class="mb-0">Create New Post</h1>
-                <a href="dashboard.html" class="btn btn--ghost">← Back to Dashboard</a>
+                <a href="/dashboard" class="btn btn--ghost">← Back to Dashboard</a>
             </div>
 
             <div class="card">
@@ -167,7 +167,7 @@
                         <button type="submit" class="btn btn--primary">Publish Post</button>
                         <button type="button" class="btn btn--secondary">Save as Draft</button>
                         <button type="button" class="btn btn--ghost">Preview</button>
-                        <a href="dashboard.html" class="btn btn--ghost">Cancel</a>
+                        <a href="/dashboard" class="btn btn--ghost">Cancel</a>
                     </div>
                 </form>
             </div>
@@ -180,16 +180,16 @@
             <div class="footer__content">
                 <p class="footer__text">&copy; 2025 CryptoBlog. All rights reserved.</p>
                 <ul class="footer__links">
-                    <li><a href="privacy.html" class="footer__link">Privacy Policy</a></li>
-                    <li><a href="terms.html" class="footer__link">Terms of Service</a></li>
-                    <li><a href="about.html" class="footer__link">Contact</a></li>
+                    <li><a href="/privacy" class="footer__link">Privacy Policy</a></li>
+                    <li><a href="/terms" class="footer__link">Terms of Service</a></li>
+                    <li><a href="/about" class="footer__link">Contact</a></li>
                 </ul>
             </div>
         </div>
     </footer>
 
-    <script src="../static/js/auth.js"></script>
-    <script src="../static/js/posts.js"></script>
-    <script src="../static/js/create-post.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/posts.js"></script>
+    <script src="/js/create-post.js"></script>
 </body>
 </html>
