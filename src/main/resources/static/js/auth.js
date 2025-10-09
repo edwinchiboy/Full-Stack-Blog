@@ -86,7 +86,7 @@ async function handleLogin(event) {
 
     // Get form data
     const loginData = {
-        username: emailInput.value.trim(),
+        email: emailInput.value.trim(),
         password: passwordInput.value
     };
 
@@ -122,13 +122,30 @@ async function handleLogin(event) {
             // Show success message
             showNotification('Login successful! Redirecting...', 'success');
 
-            // Redirect to dashboard
+            // Redirect to homepage (will show personalized view based on role)
             setTimeout(() => {
-                window.location.href = '/dashboard';
+                window.location.href = '/';
             }, 1000);
         } else {
-            // Show error message
-            const errorMessage = data.message || 'Invalid email or password';
+            // Handle different error cases with specific messages
+            let errorMessage = 'Invalid email or password. Please try again.';
+
+            if (response.status === 401) {
+                // Unauthorized - wrong credentials
+                errorMessage = 'Incorrect email or password. Please check your credentials and try again.';
+            } else if (response.status === 403) {
+                // Forbidden - account might be disabled
+                errorMessage = 'Your account is not active. Please contact support.';
+            } else if (response.status === 404) {
+                // Not found - user doesn't exist
+                errorMessage = 'No account found with this email. Please register first.';
+            } else if (response.status === 500) {
+                // Server error
+                errorMessage = 'Server error occurred. Please try again later.';
+            } else if (data.message) {
+                errorMessage = data.message;
+            }
+
             showError(errorMessage, errorContainer);
         }
     } catch (error) {
@@ -148,7 +165,8 @@ async function handleRegistration(event) {
     event.preventDefault();
 
     const form = event.target;
-    const firstNameInput = form.querySelector('#username'); // Using username field as firstName
+    const firstNameInput = form.querySelector('#firstName');
+    const lastNameInput = form.querySelector('#lastName');
     const emailInput = form.querySelector('#email');
     const passwordInput = form.querySelector('#password');
     const confirmPasswordInput = form.querySelector('#confirm-password');
@@ -163,7 +181,7 @@ async function handleRegistration(event) {
     // Get form data
     const registrationData = {
         firstName: firstNameInput.value.trim(),
-        lastName: '', // You can add a lastName field if needed
+        lastName: lastNameInput.value.trim(),
         email: emailInput.value.trim()
     };
 
@@ -190,15 +208,32 @@ async function handleRegistration(event) {
             sessionStorage.setItem('registration_id', result.data.registrationId);
             sessionStorage.setItem('user_email', emailInput.value.trim());
 
-            // Show success and redirect to OTP verification page
-            showNotification('Registration initiated! Please check your email for OTP.', 'success');
+            // Show success message
+            showNotification('Registration successful! Completing signup...', 'success');
 
-            // Create OTP verification UI
+            // Skip OTP verification and complete signup directly
             setTimeout(() => {
-                showOTPVerification();
-            }, 1500);
+                completeSignup();
+            }, 1000);
         } else {
-            const errorMessage = result.message || 'Registration failed. Please try again.';
+            // Handle different error cases with specific messages
+            let errorMessage = 'Registration failed. Please try again.';
+
+            if (response.status === 409) {
+                // Conflict - duplicate email
+                errorMessage = 'This email is already registered. Please <a href="/login" style="color: var(--color-primary); text-decoration: underline;">login</a> or use a different email address.';
+                showNotification(errorMessage, 'error');
+                return; // Return early to show HTML message
+            } else if (response.status === 400) {
+                // Bad request - validation error
+                errorMessage = result.message || 'Invalid registration data. Please check your information and try again.';
+            } else if (response.status === 500) {
+                // Server error
+                errorMessage = 'Server error occurred. Please try again later or contact support.';
+            } else if (result.message) {
+                errorMessage = result.message;
+            }
+
             showNotification(errorMessage, 'error');
         }
     } catch (error) {
@@ -334,13 +369,39 @@ async function completeSignup() {
             sessionStorage.removeItem('registration_id');
             sessionStorage.removeItem('user_email');
 
-            showNotification('Registration complete! Redirecting to login...', 'success');
+            showNotification('🎉 Registration complete! Redirecting to login...', 'success');
 
             setTimeout(() => {
                 window.location.href = '/login';
             }, 2000);
         } else {
-            showNotification(result.message || 'Failed to complete registration', 'error');
+            // Handle different error cases with specific messages
+            let errorMessage = 'Failed to complete registration. Please try again.';
+
+            if (response.status === 403) {
+                // Forbidden - email not verified
+                errorMessage = 'Email verification pending. Please verify your email first.';
+            } else if (response.status === 404) {
+                // Not found - registration not found
+                errorMessage = 'Registration session expired. Please start registration again.';
+            } else if (response.status === 400) {
+                // Bad request - validation error
+                errorMessage = result.message || 'Invalid password. Password must be at least 8 characters with letters and numbers.';
+            } else if (response.status === 500) {
+                // Server error
+                errorMessage = 'Server error occurred while completing registration. Please try again or contact support.';
+            } else if (result.message) {
+                errorMessage = result.message;
+            }
+
+            showNotification(errorMessage, 'error');
+
+            // If registration expired, redirect to register page after showing error
+            if (response.status === 404) {
+                setTimeout(() => {
+                    window.location.href = '/register';
+                }, 3000);
+            }
         }
     } catch (error) {
         console.error('Complete signup error:', error);
@@ -498,7 +559,13 @@ function showNotification(message, type = 'info') {
 
     const notification = document.createElement('div');
     notification.className = `notification-toast notification-toast--${type}`;
-    notification.textContent = message;
+
+    // Check if message contains HTML
+    if (message.includes('<')) {
+        notification.innerHTML = message;
+    } else {
+        notification.textContent = message;
+    }
     notification.style.cssText = `
         position: fixed;
         top: 20px;

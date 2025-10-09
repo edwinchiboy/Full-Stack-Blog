@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-import java.time.LocalDate;
 
 @Data
 @Builder
@@ -29,8 +28,4 @@ public class InitiateCustomerRegistrationReqDto {
         this.lastName = lastName;
         this.email = email;
     }
-
-
-
-
 }

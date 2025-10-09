@@ -26,7 +26,7 @@ public class Registration  extends Audit{
     private String email;
 
 
-    @Column(columnDefinition = "json")
+    @Column(length = 1000)
     @Convert(converter = RegistrationStepSetConverter.class)
     private Set<RegistrationStep> completedRegistrationSteps;
 

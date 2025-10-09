@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Signup - CryptoBlog</title>
+    <meta name="description" content="Create a new admin account">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="text-center mb-2xl">
+                <a href="/" class="header__logo" style="font-size: var(--font-size-3xl);">CRYPTOBLOG</a>
+            </div>
+
+            <h2 class="auth-card__title">Admin Registration</h2>
+
+            <div id="error-message" class="hidden">
+                <div class="alert alert--error mb-xl">
+                    <span id="error-text"></span>
+                </div>
+            </div>
+
+            <div id="success-message" class="hidden">
+                <div class="alert alert--success mb-xl">
+                    Admin account created successfully! Redirecting to login...
+                </div>
+            </div>
+
+            <form id="admin-signup-form">
+                <div class="form-group">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input
+                        type="text"
+                        id="firstName"
+                        class="form-input"
+                        placeholder="Enter your first name"
+                        required
+                        aria-required="true">
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input
+                        type="text"
+                        id="lastName"
+                        class="form-input"
+                        placeholder="Enter your last name"
+                        required
+                        aria-required="true">
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        class="form-input"
+                        placeholder="your@email.com"
+                        required
+                        aria-required="true">
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-input"
+                        placeholder="Enter password (min 8 characters)"
+                        required
+                        minlength="8"
+                        aria-required="true">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        class="form-input"
+                        placeholder="Confirm your password"
+                        required
+                        minlength="8"
+                        aria-required="true">
+                </div>
+
+                <button type="submit" class="btn btn--primary w-full mb-lg">
+                    Create Admin Account
+                </button>
+            </form>
+
+            <div class="auth-card__footer">
+                <p><a href="/login">Already have an account? Sign in</a></p>
+                <p style="margin-top: var(--space-sm);"><a href="/">← Back to home</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/admin-signup.js"></script>
+</body>
+</html>

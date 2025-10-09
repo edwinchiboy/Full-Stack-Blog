@@ -11,12 +11,14 @@ public class AppProperties {
     private final Environment environment;
     private final EmailConfig emailConfig;
     private final String defaultFromEmail;
+    private final boolean skipEmailVerification;
 
 
-    public AppProperties(final Environment environment, final EmailConfig emailConfig, final String defaultFromEmail) {
+    public AppProperties(final Environment environment, final EmailConfig emailConfig, final String defaultFromEmail, final boolean skipEmailVerification) {
         this.environment = environment;
         this.emailConfig = emailConfig;
         this.defaultFromEmail = defaultFromEmail;
+        this.skipEmailVerification = skipEmailVerification;
     }
 
     @Getter

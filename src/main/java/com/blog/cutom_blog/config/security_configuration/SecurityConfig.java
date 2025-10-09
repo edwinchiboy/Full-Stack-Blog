@@ -66,28 +66,29 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // Authorization rules
             .authorizeHttpRequests(auth -> auth
-                // Public web pages
-                .requestMatchers("/", "/login", "/register", "/about", "/post", "/privacy", "/terms").permitAll()
-                // Static resources
-                .requestMatchers("/css/**", "/js/**", "/assets/**", "/static/**").permitAll()
-                // Public API endpoints
+                // Public API endpoints - MUST come first before web pages
+                .requestMatchers("/v1/registration", "/v1/registration/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/v1/registration/**").permitAll()
                 .requestMatchers("/api/posts/**").permitAll()
                 .requestMatchers("/api/categories/**").permitAll()
                 .requestMatchers("/api/tags/**").permitAll()
                 .requestMatchers("/api/subscribers/**").permitAll()
                 .requestMatchers("/api/password-reset/**").permitAll()
+                // Static resources
+                .requestMatchers("/css/**", "/js/**", "/assets/**", "/static/**").permitAll()
+                // Public web pages
+                .requestMatchers("/", "/login", "/register", "/about", "/post", "/privacy", "/terms").permitAll()
+                .requestMatchers("/error").permitAll()
                 // Admin endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Protected pages
                 .requestMatchers("/dashboard", "/create-post").authenticated()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             );
 
         // Custom authentication provider
         http.authenticationProvider(authenticationProvider());
-        // JWT filter
+        // JWT filter - add AFTER setting up security rules
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

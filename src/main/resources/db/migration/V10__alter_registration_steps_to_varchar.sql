@@ -1,0 +1,1 @@
+ALTER TABLE registration ALTER COLUMN completed_registration_steps TYPE VARCHAR(1000);

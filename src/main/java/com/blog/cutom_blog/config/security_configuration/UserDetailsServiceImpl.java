@@ -14,14 +14,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     UserRepository userRepository;
-    UserDetailsImpl userDetailsImpl;
+
+    @Autowired
+    com.blog.cutom_blog.services.RoleService roleService;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+        // Username parameter is actually email (Spring Security naming convention)
+        User user = userRepository.findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + username));
 
+        // Create UserDetailsImpl instance with injected roleService
+        UserDetailsImpl userDetailsImpl = new UserDetailsImpl(null, null, null, null, null);
+        userDetailsImpl.setRoleService(roleService);
         return userDetailsImpl.build(user);
     }
 }

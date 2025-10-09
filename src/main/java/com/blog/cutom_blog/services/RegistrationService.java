@@ -14,8 +14,6 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
@@ -51,6 +49,13 @@ public class RegistrationService {
         } else {
             final Set<RegistrationStep> completedRegistrationSteps = new HashSet<>();
             completedRegistrationSteps.add(RegistrationStep.SUBMIT_EMAIL);
+
+            // Auto-verify email in development mode
+            if (appProperties.isSkipEmailVerification()) {
+                completedRegistrationSteps.add(RegistrationStep.VERIFY_EMAIL);
+                log.info("Email verification skipped for development mode: {}", initiateRegistrationRequestDto.getEmail());
+            }
+
             fetchedCustomerRegistration = this.repository.save(Registration.builder()
                 .email(initiateRegistrationRequestDto.getEmail())
                 .firstName(initiateRegistrationRequestDto.getFirstName())
@@ -59,10 +64,23 @@ public class RegistrationService {
                 .build());
         }
 
-        final SendOtpResponse sendOtpResponse = otpService.generateAndSendOtp(
-            fetchedCustomerRegistration.getEmail(),
-            fetchedCustomerRegistration.getId()
-        );
+        SendOtpResponse sendOtpResponse;
+
+        // Skip sending OTP email in development mode
+        if (appProperties.isSkipEmailVerification()) {
+            log.info("Skipping OTP email send for development mode");
+            sendOtpResponse = SendOtpResponse.builder()
+                .durationToExpireMinutes(10)
+                .durationToExpireSeconds(600)
+                .expireAt(java.time.Instant.now().plusSeconds(600))
+                .issuedAt(java.time.Instant.now())
+                .build();
+        } else {
+            sendOtpResponse = otpService.generateAndSendOtp(
+                fetchedCustomerRegistration.getEmail(),
+                fetchedCustomerRegistration.getId()
+            );
+        }
 
         return InitiateCustomerRegistrationResponseDto.builder()
             .registrationId(fetchedCustomerRegistration.getId())
@@ -97,7 +115,7 @@ public class RegistrationService {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public CompleteSignUpResponseDto completeSignUp(final CompleteSignUpReqDto completeSignUpReqDto) {
 
         Registration customerRegistration = repository.findById(completeSignUpReqDto.getRegistrationId())
@@ -109,11 +127,9 @@ public class RegistrationService {
 
         final User user = this.userService.createUser(customerRegistration, completeSignUpReqDto.getPassword());
 
-        try {
-            repository.delete(customerRegistration);
-        } catch (final RuntimeException e) {
-            log.error("Error deleting registration record: {}", e.getMessage());
-        }
+        // Delete registration record after user creation
+        repository.delete(customerRegistration);
+        repository.flush(); // Ensure deletion is committed
 
         return CompleteSignUpResponseDto.builder()
             .email(user.getEmail())

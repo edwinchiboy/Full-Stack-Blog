@@ -28,6 +28,30 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        // Skip JWT filter for public endpoints
+        return path.startsWith("/v1/registration") ||
+               path.startsWith("/api/auth") ||
+               path.startsWith("/api/posts") ||
+               path.startsWith("/api/categories") ||
+               path.startsWith("/api/tags") ||
+               path.startsWith("/api/subscribers") ||
+               path.startsWith("/api/password-reset") ||
+               path.startsWith("/css") ||
+               path.startsWith("/js") ||
+               path.startsWith("/assets") ||
+               path.startsWith("/static") ||
+               path.equals("/") ||
+               path.equals("/login") ||
+               path.equals("/register") ||
+               path.equals("/about") ||
+               path.equals("/post") ||
+               path.equals("/privacy") ||
+               path.equals("/terms");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
         try {

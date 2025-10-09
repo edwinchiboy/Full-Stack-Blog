@@ -50,4 +50,9 @@ public class WebController {
     public String terms() {
         return "terms";
     }
+
+    @GetMapping("/admin-signup")
+    public String adminSignup() {
+        return "admin-signup";
+    }
 }

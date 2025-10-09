@@ -3,8 +3,10 @@ package com.blog.cutom_blog.controllers;
 
 import com.blog.cutom_blog.config.security_configuration.JwtUtils;
 import com.blog.cutom_blog.config.security_configuration.UserDetailsImpl;
+import com.blog.cutom_blog.dtos.AdminSignupRequest;
 import com.blog.cutom_blog.dtos.JwtResponse;
 import com.blog.cutom_blog.dtos.LoginRequest;
+import com.blog.cutom_blog.dtos.MessageResponse;
 import com.blog.cutom_blog.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,7 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+            new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -53,5 +55,14 @@ public class AuthController {
             roles));
     }
 
+    @PostMapping("/admin/signup")
+    public ResponseEntity<?> registerAdmin(@Valid @RequestBody AdminSignupRequest signupRequest) {
+        try {
+            userService.createAdminUser(signupRequest);
+            return ResponseEntity.ok(new MessageResponse("Admin account created successfully!"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
 
 }
