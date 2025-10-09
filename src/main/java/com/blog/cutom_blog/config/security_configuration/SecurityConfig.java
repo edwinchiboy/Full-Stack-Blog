@@ -76,13 +76,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/password-reset/**").permitAll()
                 // Static resources
                 .requestMatchers("/css/**", "/js/**", "/assets/**", "/static/**").permitAll()
-                // Public web pages
-                .requestMatchers("/", "/login", "/register", "/about", "/post", "/privacy", "/terms").permitAll()
+                // Public web pages (pages will handle auth checks via JavaScript)
+                .requestMatchers("/", "/login", "/register", "/admin-signup", "/about", "/post", "/privacy", "/terms", "/dashboard", "/create-post").permitAll()
                 .requestMatchers("/error").permitAll()
-                // Admin endpoints
+                // Admin endpoints - API level protection
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                // Protected pages
-                .requestMatchers("/dashboard", "/create-post").authenticated()
                 .anyRequest().permitAll()
             );
 
