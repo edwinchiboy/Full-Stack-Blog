@@ -74,10 +74,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/tags/**").permitAll()
                 .requestMatchers("/api/subscribers/**").permitAll()
                 .requestMatchers("/api/password-reset/**").permitAll()
+                .requestMatchers("/api/upload/**").authenticated()
                 // Static resources
-                .requestMatchers("/css/**", "/js/**", "/assets/**", "/static/**").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/assets/**", "/static/**", "/uploads/**").permitAll()
                 // Public web pages (pages will handle auth checks via JavaScript)
-                .requestMatchers("/", "/login", "/register", "/admin-signup", "/about", "/post", "/privacy", "/terms", "/dashboard", "/create-post").permitAll()
+                .requestMatchers("/", "/login", "/register", "/admin-signup", "/about", "/post", "/privacy", "/terms", "/dashboard", "/create-post", "/preview-post").permitAll()
                 .requestMatchers("/error").permitAll()
                 // Admin endpoints - API level protection
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

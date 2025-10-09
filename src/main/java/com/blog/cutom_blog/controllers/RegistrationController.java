@@ -72,4 +72,18 @@ public class RegistrationController {
         );
     }
 
+    @PutMapping("/complete-admin-sign-up")
+    public ResponseEntity<ApiResponse<?>> completeAdminSignUp(final @RequestBody CompleteSignUpReqDto completeSignUpReqDto){
+
+        final CompleteSignUpResponseDto submitPasswordResponseDto = registrationService
+            .completeAdminSignUp(completeSignUpReqDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+            ApiResponse.builder()
+                .data(submitPasswordResponseDto)
+                .message("Success")
+                .build()
+        );
+    }
+
 }

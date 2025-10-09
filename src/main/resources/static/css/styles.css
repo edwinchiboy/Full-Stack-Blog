@@ -355,6 +355,83 @@ strong {
 }
 
 /* ============================================
+   Mobile Bottom Navigation
+   ============================================ */
+.mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    background: rgba(10, 14, 39, 0.98);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-sm) 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.mobile-nav__list {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    list-style: none;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.mobile-nav__item {
+    flex: 1;
+    text-align: center;
+}
+
+.mobile-nav__link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--space-xs);
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.mobile-nav__link:hover,
+.mobile-nav__link--active {
+    color: var(--color-primary);
+}
+
+.mobile-nav__icon {
+    font-size: 22px;
+    transition: transform var(--transition-fast);
+}
+
+.mobile-nav__link:hover .mobile-nav__icon {
+    transform: scale(1.1);
+}
+
+.mobile-nav__link--active .mobile-nav__icon {
+    color: var(--color-primary);
+    filter: drop-shadow(0 0 8px var(--color-primary-glow));
+}
+
+/* Hide mobile nav on desktop */
+@media (min-width: 768px) {
+    .mobile-nav {
+        display: none;
+    }
+}
+
+/* Add bottom padding to body on mobile to prevent content from being hidden by mobile nav */
+@media (max-width: 767px) {
+    body {
+        padding-bottom: 70px;
+    }
+}
+
+/* ============================================
    Footer
    ============================================ */
 .footer {

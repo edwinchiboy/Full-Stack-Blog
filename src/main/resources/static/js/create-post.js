@@ -14,6 +14,18 @@ async function handlePostSubmit(event) {
     const form = event.target;
     const submitButton = form.querySelector('button[type="submit"]');
 
+    // Debug: Check authentication status
+    console.log('=== Authentication Debug Info ===');
+    console.log('Is Authenticated:', Auth.isAuthenticated());
+    console.log('Is Admin:', Auth.isAdmin());
+    console.log('Token exists:', !!Auth.getToken());
+    console.log('Token preview:', Auth.getToken() ? Auth.getToken().substring(0, 30) + '...' : 'none');
+
+    const user = Auth.getUser();
+    console.log('User data:', user);
+    console.log('User roles:', user?.roles);
+    console.log('Auth header:', Auth.getAuthHeader());
+
     // Get form data
     const postData = {
         title: form.querySelector('#title').value.trim(),
@@ -28,10 +40,31 @@ async function handlePostSubmit(event) {
         metaDescription: form.querySelector('#meta-description')?.value.trim() || null
     };
 
+    console.log('Post data to submit:', postData);
+
     // Validate required fields
     if (!postData.title || !postData.content || !postData.excerpt) {
         if (typeof showNotification === 'function') {
             showNotification('Please fill in all required fields', 'error');
+        }
+        return;
+    }
+
+    // Check authentication before proceeding
+    if (!Auth.isAuthenticated()) {
+        if (typeof showNotification === 'function') {
+            showNotification('You must be logged in to create posts', 'error');
+        }
+        setTimeout(() => {
+            window.location.href = '/login';
+        }, 1500);
+        return;
+    }
+
+    // Check admin role
+    if (!Auth.isAdmin()) {
+        if (typeof showNotification === 'function') {
+            showNotification('You must be an admin to create posts', 'error');
         }
         return;
     }
@@ -57,10 +90,11 @@ async function handlePostSubmit(event) {
 
         // Redirect to dashboard after a short delay
         setTimeout(() => {
-            window.location.href = 'dashboard.html';
+            window.location.href = '/dashboard';
         }, 1500);
     } catch (error) {
         console.error('Error saving post:', error);
+        console.error('Error details:', error.message);
         if (typeof showNotification === 'function') {
             showNotification(error.message || 'Failed to save post', 'error');
         }
@@ -108,7 +142,7 @@ async function loadPostForEdit(postId) {
         }
         // Redirect to dashboard if post not found
         setTimeout(() => {
-            window.location.href = 'dashboard.html';
+            window.location.href = '/dashboard';
         }, 2000);
     }
 }
@@ -153,7 +187,7 @@ function handlePreview() {
     }));
 
     // Open preview in new tab
-    window.open('preview-post.html', '_blank');
+    window.open('/preview-post', '_blank');
 }
 
 /**
@@ -194,8 +228,90 @@ if (document.readyState === 'loading') {
     initCreatePost();
 }
 
+/**
+ * Handle image upload
+ */
+async function handleImageUpload() {
+    const fileInput = document.querySelector('#featured-image-file');
+    const uploadButton = document.querySelector('#upload-image-btn');
+    const imageUrlInput = document.querySelector('#featured-image');
+    const imagePreview = document.querySelector('#image-preview');
+    const imagePreviewImg = document.querySelector('#image-preview-img');
+
+    const file = fileInput.files[0];
+    if (!file) {
+        if (typeof showNotification === 'function') {
+            showNotification('Please select an image file', 'error');
+        }
+        return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        if (typeof showNotification === 'function') {
+            showNotification('Please select a valid image file', 'error');
+        }
+        return;
+    }
+
+    // Disable button during upload
+    uploadButton.disabled = true;
+    const originalText = uploadButton.textContent;
+    uploadButton.textContent = 'Uploading...';
+
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const token = Auth.getToken();
+        console.log('Token exists:', !!token);
+        console.log('Token preview:', token ? token.substring(0, 20) + '...' : 'none');
+
+        if (!token) {
+            throw new Error('You must be logged in to upload images');
+        }
+
+        const response = await fetch(window.location.origin + '/api/upload/image', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Upload failed');
+        }
+
+        const result = await response.json();
+
+        // Set the image URL
+        imageUrlInput.value = window.location.origin + result.url;
+
+        // Show preview
+        imagePreviewImg.src = window.location.origin + result.url;
+        imagePreview.style.display = 'block';
+
+        if (typeof showNotification === 'function') {
+            showNotification('Image uploaded successfully!', 'success');
+        }
+
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        if (typeof showNotification === 'function') {
+            showNotification(error.message || 'Failed to upload image', 'error');
+        }
+    } finally {
+        uploadButton.disabled = false;
+        uploadButton.textContent = originalText;
+    }
+}
+
 function initCreatePost() {
-    if (!window.location.pathname.includes('create-post.html')) return;
+    if (!window.location.pathname.includes('create-post')) return;
 
     // Load categories
     loadCategories();
@@ -213,16 +329,31 @@ function initCreatePost() {
         form.addEventListener('submit', handlePostSubmit);
     }
 
-    // Attach save as draft handler
-    const draftButton = document.querySelector('button[type="button"].btn--secondary');
-    if (draftButton) {
-        draftButton.addEventListener('click', handleSaveAsDraft);
-    }
-
     // Attach preview handler
     const previewButton = Array.from(document.querySelectorAll('button[type="button"]'))
         .find(btn => btn.textContent.trim() === 'Preview');
     if (previewButton) {
         previewButton.addEventListener('click', handlePreview);
+    }
+
+    // Attach upload handler
+    const uploadButton = document.querySelector('#upload-image-btn');
+    if (uploadButton) {
+        uploadButton.addEventListener('click', handleImageUpload);
+    }
+
+    // Show preview when image URL is manually entered
+    const imageUrlInput = document.querySelector('#featured-image');
+    if (imageUrlInput) {
+        imageUrlInput.addEventListener('input', function() {
+            const imagePreview = document.querySelector('#image-preview');
+            const imagePreviewImg = document.querySelector('#image-preview-img');
+            if (this.value) {
+                imagePreviewImg.src = this.value;
+                imagePreview.style.display = 'block';
+            } else {
+                imagePreview.style.display = 'none';
+            }
+        });
     }
 }

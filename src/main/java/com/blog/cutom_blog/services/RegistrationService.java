@@ -125,7 +125,7 @@ public class RegistrationService {
             throw new ForbiddenException("Email verification pending. Please verify your email to complete registration.");
         }
 
-        final User user = this.userService.createUser(customerRegistration, completeSignUpReqDto.getPassword());
+        final User user = this.userService.createReaderUser(customerRegistration, completeSignUpReqDto.getPassword());
 
         // Delete registration record after user creation
         repository.delete(customerRegistration);
@@ -135,6 +135,29 @@ public class RegistrationService {
             .email(user.getEmail())
             .userId(user.getId())
             .message("Registration completed successfully. Please login to continue.")
+            .build();
+    }
+
+    @Transactional
+    public CompleteSignUpResponseDto completeAdminSignUp(final CompleteSignUpReqDto completeSignUpReqDto) {
+
+        Registration customerRegistration = repository.findById(completeSignUpReqDto.getRegistrationId())
+            .orElseThrow(() -> new NotFoundException("Unknown registration id"));
+
+        if (!customerRegistration.getCompletedRegistrationSteps().contains(RegistrationStep.VERIFY_EMAIL)) {
+            throw new ForbiddenException("Email verification pending. Please verify your email to complete registration.");
+        }
+
+        final User user = this.userService.createAdminUserFromRegistration(customerRegistration, completeSignUpReqDto.getPassword());
+
+        // Delete registration record after user creation
+        repository.delete(customerRegistration);
+        repository.flush(); // Ensure deletion is committed
+
+        return CompleteSignUpResponseDto.builder()
+            .email(user.getEmail())
+            .userId(user.getId())
+            .message("Admin registration completed successfully. Please login to continue.")
             .build();
     }
 

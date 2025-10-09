@@ -21,9 +21,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Username parameter is actually email (Spring Security naming convention)
-        User user = userRepository.findByEmail(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + username));
+        // Try to find by username first, then by email
+        User user = userRepository.findByUsername(username)
+            .or(() -> userRepository.findByEmail(username))
+            .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username or email: " + username));
 
         // Create UserDetailsImpl instance with injected roleService
         UserDetailsImpl userDetailsImpl = new UserDetailsImpl(null, null, null, null, null);

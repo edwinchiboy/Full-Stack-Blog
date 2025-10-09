@@ -198,7 +198,7 @@
         </section>
 
         <!-- Newsletter -->
-        <section class="section">
+        <section class="section" id="newsletter">
             <div class="container container--narrow">
                 <div class="card" style="text-align: center;">
                     <h2 class="mb-lg">Subscribe to Our Newsletter</h2>
@@ -228,6 +228,42 @@
             </div>
         </div>
     </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav">
+        <ul class="mobile-nav__list">
+            <li class="mobile-nav__item">
+                <a href="/" class="mobile-nav__link mobile-nav__link--active">
+                    <span class="mobile-nav__icon">🏠</span>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="mobile-nav__item">
+                <a href="/#posts" class="mobile-nav__link">
+                    <span class="mobile-nav__icon">📰</span>
+                    <span>Articles</span>
+                </a>
+            </li>
+            <li class="mobile-nav__item" id="mobile-dashboard-nav-item" style="display: none;">
+                <a href="/dashboard" class="mobile-nav__link">
+                    <span class="mobile-nav__icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="mobile-nav__item">
+                <a href="/about" class="mobile-nav__link">
+                    <span class="mobile-nav__icon">ℹ️</span>
+                    <span>About</span>
+                </a>
+            </li>
+            <li class="mobile-nav__item" id="mobile-login-nav-item">
+                <a href="/login" class="mobile-nav__link">
+                    <span class="mobile-nav__icon">🔐</span>
+                    <span>Login</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 
     <script src="/js/auth.js"></script>
     <script src="/js/posts.js"></script>

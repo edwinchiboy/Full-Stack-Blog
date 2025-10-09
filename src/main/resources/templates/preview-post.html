@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Post - CryptoBlog</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header__container">
+            <a href="/" class="header__logo">CRYPTOBLOG</a>
+            <div class="header__actions">
+                <button onclick="window.close()" class="btn btn--secondary btn--small">Close Preview</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <article class="section">
+            <div class="container container--narrow">
+                <!-- Article Header -->
+                <div class="article-header">
+                    <div class="article-header__category">
+                        <span class="post-card__category">PREVIEW</span>
+                    </div>
+
+                    <h1 class="article-header__title" id="preview-title">Post Title</h1>
+
+                    <p class="article-header__subtitle" id="preview-subtitle">
+                        Post subtitle
+                    </p>
+
+                    <div class="article-header__meta">
+                        <span>Preview Mode</span>
+                    </div>
+                </div>
+
+                <!-- Featured Image -->
+                <div id="preview-featured-image-container" style="display: none; margin-bottom: var(--space-2xl);">
+                    <img id="preview-featured-image" src="" alt="Featured Image" style="width: 100%; border-radius: var(--border-radius-lg);">
+                </div>
+
+                <!-- Article Excerpt -->
+                <div class="card" style="background: var(--color-bg-elevated); padding: var(--space-xl); margin-bottom: var(--space-2xl);">
+                    <h3 style="margin-bottom: var(--space-md);">Excerpt</h3>
+                    <p id="preview-excerpt">Post excerpt</p>
+                </div>
+
+                <!-- Article Body -->
+                <div class="article-body" id="preview-content">
+                    <p>Post content will appear here...</p>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <p class="footer__text">&copy; 2025 CryptoBlog. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Load preview data from sessionStorage
+        (function() {
+            const previewData = sessionStorage.getItem('preview_post');
+
+            if (!previewData) {
+                document.querySelector('.article-header__title').textContent = 'No Preview Data';
+                document.querySelector('.article-header__subtitle').textContent = 'Please go back to the create post page and click preview again.';
+                document.querySelector('#preview-excerpt').textContent = '';
+                document.querySelector('#preview-content').innerHTML = '<p class="text-center" style="color: var(--color-text-secondary);">No preview data available</p>';
+                return;
+            }
+
+            try {
+                const post = JSON.parse(previewData);
+
+                // Set title
+                if (post.title) {
+                    document.querySelector('#preview-title').textContent = post.title;
+                    document.title = `Preview: ${post.title} - CryptoBlog`;
+                }
+
+                // Set subtitle
+                if (post.subtitle) {
+                    document.querySelector('#preview-subtitle').textContent = post.subtitle;
+                    document.querySelector('#preview-subtitle').style.display = 'block';
+                } else {
+                    document.querySelector('#preview-subtitle').style.display = 'none';
+                }
+
+                // Set featured image
+                if (post.featuredImage) {
+                    document.querySelector('#preview-featured-image').src = post.featuredImage;
+                    document.querySelector('#preview-featured-image-container').style.display = 'block';
+                }
+
+                // Set excerpt
+                if (post.excerpt) {
+                    document.querySelector('#preview-excerpt').textContent = post.excerpt;
+                } else {
+                    document.querySelector('#preview-excerpt').parentElement.style.display = 'none';
+                }
+
+                // Set content - convert newlines to paragraphs
+                if (post.content) {
+                    const contentDiv = document.querySelector('#preview-content');
+                    const paragraphs = post.content.split('\n\n').filter(p => p.trim());
+                    contentDiv.innerHTML = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+                }
+
+            } catch (error) {
+                console.error('Error parsing preview data:', error);
+                document.querySelector('#preview-content').innerHTML = '<p class="text-center" style="color: var(--color-error);">Error loading preview data</p>';
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -28,6 +28,11 @@ public class UserService {
     PasswordEncoder encoder;
 
     public User createUser(Registration registration, String password) {
+        // Default behavior: create reader user
+        return createReaderUser(registration, password);
+    }
+
+    public User createReaderUser(Registration registration, String password) {
         // Generate username from email (part before @) or firstName-lastName, max 50 chars
         String username = generateUsername(registration.getEmail(), registration.getFirstName(), registration.getLastName());
 
@@ -39,11 +44,31 @@ public class UserService {
             .password(encoder.encode(password))
             .build();
 
-        // Default role is READER (regular user)
-        Role userRole = roleRepository.findByName(ERole.ROLE_READER)
-            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        // Assign READER role
+        Role readerRole = roleRepository.findByName(ERole.ROLE_READER)
+            .orElseThrow(() -> new RuntimeException("Error: Reader role is not found."));
 
-        user.setRoleId(userRole.getId());
+        user.setRoleId(readerRole.getId());
+        return userRepository.save(user);
+    }
+
+    public User createAdminUserFromRegistration(Registration registration, String password) {
+        // Generate username from email (part before @) or firstName-lastName, max 50 chars
+        String username = generateUsername(registration.getEmail(), registration.getFirstName(), registration.getLastName());
+
+        User user = User.builder()
+            .username(username)
+            .firstName(registration.getFirstName())
+            .lastName(registration.getLastName())
+            .email(registration.getEmail())
+            .password(encoder.encode(password))
+            .build();
+
+        // Assign ADMIN role
+        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+            .orElseThrow(() -> new RuntimeException("Error: Admin role is not found."));
+
+        user.setRoleId(adminRole.getId());
         return userRepository.save(user);
     }
 

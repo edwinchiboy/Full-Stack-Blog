@@ -132,7 +132,8 @@
 
                     <div class="text-center">
                         <a href="/#posts" class="btn btn--primary">Explore Articles</a>
-                        <a href="/register" class="btn btn--secondary" style="margin-left: var(--space-md);">Create Account</a>
+                        <a href="/register" id="create-account-btn" class="btn btn--secondary" style="margin-left: var(--space-md); display: none;">Create Account</a>
+                        <a href="/#newsletter" id="subscribe-btn" class="btn btn--secondary" style="margin-left: var(--space-md); display: none;">Subscribe</a>
                     </div>
                 </div>
             </div>
@@ -147,7 +148,9 @@
                         Have questions, suggestions, or feedback? We'd love to hear from you.
                     </p>
                     <p style="color: var(--color-primary); font-size: var(--font-size-lg);">
-                        contact@cryptoblog.com
+                        <a href="mailto:choboy.edeh17@gmail.com" style="color: var(--color-primary); text-decoration: none;">
+                            choboy.edeh17@gmail.com
+                        </a>
                     </p>
                 </div>
             </div>
@@ -169,6 +172,37 @@
     </footer>
 
     <script src="/js/auth.js"></script>
+    <script>
+        // Toggle between "Create Account" and "Subscribe" buttons based on login status
+        (function() {
+            function updateButtons() {
+                const token = localStorage.getItem('jwt_token');
+                const user = localStorage.getItem('user_data');
+                const createAccountBtn = document.getElementById('create-account-btn');
+                const subscribeBtn = document.getElementById('subscribe-btn');
+
+                if (token && user) {
+                    // User is logged in - show Subscribe button, hide Create Account
+                    if (createAccountBtn) createAccountBtn.style.display = 'none';
+                    if (subscribeBtn) subscribeBtn.style.display = 'inline-block';
+                } else {
+                    // User is not logged in - show Create Account, hide Subscribe
+                    if (createAccountBtn) createAccountBtn.style.display = 'inline-block';
+                    if (subscribeBtn) subscribeBtn.style.display = 'none';
+                }
+            }
+
+            // Wait for DOM to be ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', updateButtons);
+            } else {
+                updateButtons();
+            }
+
+            // Run again after a delay in case auth.js modifies localStorage
+            setTimeout(updateButtons, 500);
+        })();
+    </script>
     <script src="/js/newsletter.js"></script>
 </body>
 </html>

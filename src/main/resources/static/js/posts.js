@@ -67,6 +67,14 @@ const PostsAPI = {
      */
     async createPost(postData) {
         try {
+            console.log('=== API Request Debug ===');
+            console.log('URL:', this.BASE_URL);
+            console.log('Headers:', {
+                'Content-Type': 'application/json',
+                ...Auth.getAuthHeader()
+            });
+            console.log('Request body:', postData);
+
             const response = await fetch(this.BASE_URL, {
                 method: 'POST',
                 headers: {
@@ -75,9 +83,18 @@ const PostsAPI = {
                 },
                 body: JSON.stringify(postData)
             });
+
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Failed to create post');
+                if (response.status === 401) {
+                    throw new Error('Authentication failed. Please login again.');
+                } else if (response.status === 403) {
+                    throw new Error('You do not have permission to create posts. Admin access required.');
+                }
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.message || `Failed to create post (Status: ${response.status})`);
             }
             return await response.json();
         } catch (error) {

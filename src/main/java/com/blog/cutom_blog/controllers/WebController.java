@@ -55,4 +55,9 @@ public class WebController {
     public String adminSignup() {
         return "admin-signup";
     }
+
+    @GetMapping("/preview-post")
+    public String previewPost() {
+        return "preview-post";
+    }
 }

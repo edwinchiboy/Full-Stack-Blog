@@ -9,6 +9,7 @@ const AUTH_CONFIG = {
     REGISTER_ENDPOINT: '/v1/registration',
     VALIDATE_OTP_ENDPOINT: '/v1/registration/validate-otp',
     COMPLETE_SIGNUP_ENDPOINT: '/v1/registration/complete-sign-up',
+    COMPLETE_ADMIN_SIGNUP_ENDPOINT: '/v1/registration/complete-admin-sign-up',
     TOKEN_KEY: 'jwt_token',
     USER_KEY: 'user_data'
 };
@@ -185,8 +186,13 @@ async function handleRegistration(event) {
         email: emailInput.value.trim()
     };
 
-    // Store password temporarily for later use
+    // Check if this is an admin registration
+    const isAdminCheckbox = form.querySelector('#is-admin');
+    const isAdmin = isAdminCheckbox ? isAdminCheckbox.checked : false;
+
+    // Store password and admin flag temporarily for later use
     sessionStorage.setItem('temp_password', passwordInput.value);
+    sessionStorage.setItem('is_admin', isAdmin.toString());
 
     // Disable submit button
     submitButton.disabled = true;
@@ -345,6 +351,7 @@ async function handleOTPVerification(event) {
 async function completeSignup() {
     const password = sessionStorage.getItem('temp_password');
     const registrationId = sessionStorage.getItem('registration_id');
+    const isAdmin = sessionStorage.getItem('is_admin') === 'true';
 
     const signupData = {
         registrationId: registrationId,
@@ -352,8 +359,13 @@ async function completeSignup() {
         username: sessionStorage.getItem('user_email') // Use email as username
     };
 
+    // Choose endpoint based on admin flag
+    const endpoint = isAdmin ?
+        AUTH_CONFIG.COMPLETE_ADMIN_SIGNUP_ENDPOINT :
+        AUTH_CONFIG.COMPLETE_SIGNUP_ENDPOINT;
+
     try {
-        const response = await fetch(AUTH_CONFIG.API_BASE_URL + AUTH_CONFIG.COMPLETE_SIGNUP_ENDPOINT, {
+        const response = await fetch(AUTH_CONFIG.API_BASE_URL + endpoint, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -368,8 +380,13 @@ async function completeSignup() {
             sessionStorage.removeItem('temp_password');
             sessionStorage.removeItem('registration_id');
             sessionStorage.removeItem('user_email');
+            sessionStorage.removeItem('is_admin');
 
-            showNotification('🎉 Registration complete! Redirecting to login...', 'success');
+            const message = isAdmin ?
+                '🎉 Admin registration complete! Redirecting to login...' :
+                '🎉 Registration complete! Redirecting to login...';
+
+            showNotification(message, 'success');
 
             setTimeout(() => {
                 window.location.href = '/login';
@@ -495,6 +512,8 @@ function updateNavigation() {
 
     // Get navigation elements
     const dashboardNavItem = document.getElementById('dashboard-nav-item');
+    const mobileDashboardNavItem = document.getElementById('mobile-dashboard-nav-item');
+    const mobileLoginNavItem = document.getElementById('mobile-login-nav-item');
     const guestActions = document.getElementById('guest-actions');
     const userActions = document.getElementById('user-actions');
     const userDisplayName = document.getElementById('user-display-name');
@@ -508,6 +527,16 @@ function updateNavigation() {
         // Show dashboard link if user is admin
         if (dashboardNavItem && isAdmin) {
             dashboardNavItem.style.display = 'block';
+        }
+
+        // Show mobile dashboard link if user is admin
+        if (mobileDashboardNavItem && isAdmin) {
+            mobileDashboardNavItem.style.display = 'block';
+        }
+
+        // Hide mobile login link when authenticated
+        if (mobileLoginNavItem) {
+            mobileLoginNavItem.style.display = 'none';
         }
 
         // Update user display name
@@ -528,6 +557,16 @@ function updateNavigation() {
         // Hide dashboard link
         if (dashboardNavItem) {
             dashboardNavItem.style.display = 'none';
+        }
+
+        // Hide mobile dashboard link
+        if (mobileDashboardNavItem) {
+            mobileDashboardNavItem.style.display = 'none';
+        }
+
+        // Show mobile login link when not authenticated
+        if (mobileLoginNavItem) {
+            mobileLoginNavItem.style.display = 'block';
         }
     }
 }
