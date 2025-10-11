@@ -178,6 +178,90 @@ const PostsAPI = {
             console.error('Error fetching author posts:', error);
             throw error;
         }
+    },
+
+    /**
+     * Get all posts by status (Admin only)
+     * @param {string} status - PUBLISHED, DRAFT, or SCHEDULED
+     */
+    async getPostsByStatus(status, page = 0, size = 10) {
+        try {
+            const response = await fetch(`${this.BASE_URL}/status/${status}?page=${page}&size=${size}`, {
+                headers: Auth.getAuthHeader()
+            });
+            if (!response.ok) throw new Error('Failed to fetch posts by status');
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching posts by status:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get all admin posts regardless of status (Admin only)
+     */
+    async getAllAdminPosts(page = 0, size = 10) {
+        try {
+            console.log('Fetching all admin posts...');
+
+            // Fetch all statuses with a large page size to get all posts
+            const largeSize = 1000; // Get a large number to fetch all posts
+
+            const publishedPromise = this.getPostsByStatus('PUBLISHED', 0, largeSize)
+                .catch(err => {
+                    console.error('Error fetching published posts:', err);
+                    return { content: [], totalElements: 0 };
+                });
+            const draftPromise = this.getPostsByStatus('DRAFT', 0, largeSize)
+                .catch(err => {
+                    console.error('Error fetching draft posts:', err);
+                    return { content: [], totalElements: 0 };
+                });
+            const scheduledPromise = this.getPostsByStatus('SCHEDULED', 0, largeSize)
+                .catch(err => {
+                    console.error('Error fetching scheduled posts:', err);
+                    return { content: [], totalElements: 0 };
+                });
+
+            const [published, draft, scheduled] = await Promise.all([publishedPromise, draftPromise, scheduledPromise]);
+
+            console.log('Published posts:', published.content?.length || 0);
+            console.log('Draft posts:', draft.content?.length || 0);
+            console.log('Scheduled posts:', scheduled.content?.length || 0);
+
+            // Combine all posts and sort by createdAt (newest first)
+            const allPosts = [
+                ...(published.content || []),
+                ...(draft.content || []),
+                ...(scheduled.content || [])
+            ];
+            allPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            console.log('Total combined posts:', allPosts.length);
+
+            // Calculate pagination
+            const totalElements = allPosts.length;
+            const totalPages = Math.ceil(totalElements / size) || 1;
+            const startIndex = page * size;
+            const endIndex = startIndex + size;
+            const paginatedContent = allPosts.slice(startIndex, endIndex);
+
+            console.log('Paginated content:', paginatedContent.length);
+
+            // Return in the same format as other endpoints
+            return {
+                content: paginatedContent,
+                totalElements: totalElements,
+                totalPages: totalPages,
+                number: page,
+                size: size,
+                first: page === 0,
+                last: page === totalPages - 1 || totalPages === 0
+            };
+        } catch (error) {
+            console.error('Error fetching all admin posts:', error);
+            throw error;
+        }
     }
 };
 

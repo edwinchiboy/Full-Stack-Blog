@@ -78,45 +78,149 @@ function updateStatCard(type, value) {
     });
 }
 
+// Pagination state
+let currentPage = 0;
+const postsPerPage = 10;
+
 /**
  * Load and display recent posts in dashboard table
  */
-async function loadDashboardPosts() {
+async function loadDashboardPosts(page = 0) {
     try {
-        const user = Auth.getUser();
-        if (!user) return;
+        // Use the new unified endpoint to fetch all posts by multiple statuses
+        const response = await fetch(
+            `${window.location.origin}/api/posts/by-status?statuses=DRAFT,PUBLISHED,SCHEDULED&page=${page}&size=${postsPerPage}`,
+            {
+                headers: Auth.getAuthHeader()
+            }
+        );
 
-        const data = await PostsAPI.getPostsByAuthor(user.username, 0, 10);
+        if (!response.ok) {
+            throw new Error('Failed to fetch posts');
+        }
+
+        const data = await response.json();
 
         const tbody = document.querySelector('.table tbody');
         if (!tbody) return;
 
         if (!data.content || data.content.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--color-text-secondary);">No posts yet. Create your first post!</td></tr>';
+            renderPagination(0, 0);
             return;
         }
 
         tbody.innerHTML = data.content.map(post => `
             <tr>
-                <td><strong>${post.title}</strong></td>
-                <td>${post.category?.name || 'Uncategorized'}</td>
+                <td><strong>${escapeHtml(post.title)}</strong></td>
+                <td>${escapeHtml(post.category?.name || 'Uncategorized')}</td>
                 <td>${renderStatusBadge(post.status)}</td>
                 <td>${post.viewCount || 0}</td>
                 <td>${formatDate(post.createdAt)}</td>
                 <td>
                     <div class="table__actions">
                         <button class="btn btn--ghost btn--small" onclick="editPost('${post.id}')">Edit</button>
-                        <button class="btn btn--ghost btn--small" style="color: var(--color-error);" onclick="confirmDeletePost('${post.id}', '${post.title}')">Delete</button>
+                        <button class="btn btn--ghost btn--small" style="color: var(--color-error);" onclick="confirmDeletePost('${post.id}', \`${escapeHtml(post.title)}\`)">Delete</button>
                     </div>
                 </td>
             </tr>
         `).join('');
+
+        // Update current page and render pagination
+        currentPage = page;
+        renderPagination(data.number, data.totalPages);
     } catch (error) {
         console.error('Error loading dashboard posts:', error);
+        const tbody = document.querySelector('.table tbody');
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--color-error);">Failed to load posts. Please try again.</td></tr>';
+        }
         if (typeof showNotification === 'function') {
             showNotification('Failed to load posts', 'error');
         }
     }
+}
+
+/**
+ * Render pagination controls
+ */
+function renderPagination(currentPage, totalPages) {
+    const paginationContainer = document.getElementById('pagination-container');
+    if (!paginationContainer) return;
+
+    if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+
+    let paginationHTML = '<div class="pagination__controls">';
+
+    // Previous button
+    paginationHTML += `
+        <button
+            class="pagination__btn ${currentPage === 0 ? 'pagination__btn--disabled' : ''}"
+            onclick="changePage(${currentPage - 1})"
+            ${currentPage === 0 ? 'disabled' : ''}
+        >
+            Previous
+        </button>
+    `;
+
+    // Page numbers
+    paginationHTML += '<div class="pagination__pages">';
+
+    // Always show first page
+    if (currentPage > 2) {
+        paginationHTML += `<button class="pagination__page" onclick="changePage(0)">1</button>`;
+        if (currentPage > 3) {
+            paginationHTML += '<span class="pagination__ellipsis">...</span>';
+        }
+    }
+
+    // Show pages around current page
+    for (let i = Math.max(0, currentPage - 2); i <= Math.min(totalPages - 1, currentPage + 2); i++) {
+        paginationHTML += `
+            <button
+                class="pagination__page ${i === currentPage ? 'pagination__page--active' : ''}"
+                onclick="changePage(${i})"
+            >
+                ${i + 1}
+            </button>
+        `;
+    }
+
+    // Always show last page
+    if (currentPage < totalPages - 3) {
+        if (currentPage < totalPages - 4) {
+            paginationHTML += '<span class="pagination__ellipsis">...</span>';
+        }
+        paginationHTML += `<button class="pagination__page" onclick="changePage(${totalPages - 1})">${totalPages}</button>`;
+    }
+
+    paginationHTML += '</div>';
+
+    // Next button
+    paginationHTML += `
+        <button
+            class="pagination__btn ${currentPage === totalPages - 1 ? 'pagination__btn--disabled' : ''}"
+            onclick="changePage(${currentPage + 1})"
+            ${currentPage === totalPages - 1 ? 'disabled' : ''}
+        >
+            Next
+        </button>
+    `;
+
+    paginationHTML += '</div>';
+    paginationContainer.innerHTML = paginationHTML;
+}
+
+/**
+ * Change to a different page
+ */
+function changePage(page) {
+    if (page < 0) return;
+    loadDashboardPosts(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**
@@ -158,10 +262,19 @@ function formatDate(dateString) {
 }
 
 /**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+/**
  * Navigate to edit post page
  */
 function editPost(postId) {
-    window.location.href = `create-post.html?id=${postId}`;
+    window.location.href = `/create-post?id=${postId}`;
 }
 
 /**
@@ -202,7 +315,8 @@ if (document.readyState === 'loading') {
 }
 
 function initDashboard() {
-    if (window.location.pathname.includes('dashboard.html')) {
+    // Check if we're on the dashboard page (works with or without .html)
+    if (window.location.pathname.includes('dashboard')) {
         loadDashboardStats();
         loadDashboardPosts();
     }

@@ -26,9 +26,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             .or(() -> userRepository.findByEmail(username))
             .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username or email: " + username));
 
-        // Create UserDetailsImpl instance with injected roleService
-        UserDetailsImpl userDetailsImpl = new UserDetailsImpl(null, null, null, null, null);
-        userDetailsImpl.setRoleService(roleService);
-        return userDetailsImpl.build(user);
+        // Build UserDetailsImpl with roleService
+        return UserDetailsImpl.build(user, roleService);
     }
 }

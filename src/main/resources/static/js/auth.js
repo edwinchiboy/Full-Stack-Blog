@@ -53,7 +53,11 @@ const Auth = {
      */
     isAdmin() {
         const user = this.getUser();
-        return user && user.roles && user.roles.includes('ROLE_ADMIN');
+        console.log('isAdmin check - user:', user);
+        console.log('isAdmin check - roles:', user?.roles);
+        const hasAdminRole = user && user.roles && user.roles.includes('ROLE_ADMIN');
+        console.log('isAdmin check - hasAdminRole:', hasAdminRole);
+        return hasAdminRole;
     },
 
     /**
@@ -186,9 +190,8 @@ async function handleRegistration(event) {
         email: emailInput.value.trim()
     };
 
-    // Check if this is an admin registration
-    const isAdminCheckbox = form.querySelector('#is-admin');
-    const isAdmin = isAdminCheckbox ? isAdminCheckbox.checked : false;
+    // Check if this is an admin registration based on the current page
+    const isAdmin = window.location.pathname.includes('admin-signup');
 
     // Store password and admin flag temporarily for later use
     sessionStorage.setItem('temp_password', passwordInput.value);
@@ -689,8 +692,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Register page
-    if (currentPage.includes('register')) {
+    // Register page (includes both /register and /admin-signup)
+    if (currentPage.includes('register') || currentPage.includes('admin-signup')) {
         const registerForm = document.querySelector('form');
         if (registerForm) {
             registerForm.addEventListener('submit', handleRegistration);

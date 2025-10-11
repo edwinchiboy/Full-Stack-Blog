@@ -69,11 +69,12 @@ public class SecurityConfig {
                 // Public API endpoints - MUST come first before web pages
                 .requestMatchers("/v1/registration", "/v1/registration/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/posts/**").permitAll()
-                .requestMatchers("/api/categories/**").permitAll()
-                .requestMatchers("/api/tags/**").permitAll()
                 .requestMatchers("/api/subscribers/**").permitAll()
                 .requestMatchers("/api/password-reset/**").permitAll()
+                // Public GET endpoints for posts
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts", "/api/posts/*/", "/api/posts/slug/**", "/api/posts/search").permitAll()
+                // Admin endpoints require role check - let @PreAuthorize handle it
+                .requestMatchers("/api/posts/**", "/api/categories/**", "/api/tags/**", "/api/dashboard/**").authenticated()
                 .requestMatchers("/api/upload/**").authenticated()
                 // Static resources
                 .requestMatchers("/css/**", "/js/**", "/assets/**", "/static/**", "/uploads/**").permitAll()

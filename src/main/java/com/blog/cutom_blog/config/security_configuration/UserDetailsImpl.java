@@ -16,9 +16,6 @@ import java.util.Objects;
 
 @Data
 public class UserDetailsImpl implements UserDetails {
-    @Autowired
-    private RoleService roleService;
-
     private final String id;
     private final String username;
     private final String email;
@@ -34,8 +31,8 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    public  UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities =  List.of(new SimpleGrantedAuthority( roleService.findById(user.getRoleId()).getName().name()));
+    public static UserDetailsImpl build(User user, RoleService roleService) {
+        List<GrantedAuthority> authorities =  List.of(new SimpleGrantedAuthority(roleService.findById(user.getRoleId()).getName().name()));
 
         return new UserDetailsImpl(
             user.getId(),

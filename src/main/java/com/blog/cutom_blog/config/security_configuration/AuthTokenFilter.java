@@ -30,12 +30,23 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
+        String method = request.getMethod();
+
         // Skip JWT filter for public endpoints
+        // Public GET endpoints for posts (but not admin-only endpoints)
+        boolean isPublicPostsEndpoint = "GET".equals(method) && (
+            path.matches("/api/posts/?") ||  // GET /api/posts
+            path.matches("/api/posts/[^/]+") ||  // GET /api/posts/{id}
+            path.startsWith("/api/posts/slug/") ||  // GET /api/posts/slug/{slug}
+            path.startsWith("/api/posts/category/") ||  // GET /api/posts/category/{categoryId}
+            path.startsWith("/api/posts/search")  // GET /api/posts/search
+        );
+
         return path.startsWith("/v1/registration") ||
                path.startsWith("/api/auth") ||
-               path.startsWith("/api/posts") ||
-               path.startsWith("/api/categories") ||
-               path.startsWith("/api/tags") ||
+               isPublicPostsEndpoint ||
+               (path.startsWith("/api/categories") && "GET".equals(method)) ||
+               (path.startsWith("/api/tags") && "GET".equals(method)) ||
                path.startsWith("/api/subscribers") ||
                path.startsWith("/api/password-reset") ||
                path.startsWith("/css") ||
@@ -63,6 +74,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 logger.debug("JWT validated for user: {}", username);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                System.out.println("=== DEBUG AuthTokenFilter ===");
+                System.out.println("Username: " + username);
+                System.out.println("Authorities from UserDetails: " + userDetails.getAuthorities());
+                System.out.println("=============================");
+
                 UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(userDetails,
                         null,

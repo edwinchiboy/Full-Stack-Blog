@@ -2,12 +2,11 @@ package com.blog.cutom_blog.services;
 
 
 import com.blog.cutom_blog.dtos.PostRequest;
-import com.blog.cutom_blog.models.Category;
+import com.blog.cutom_blog.dtos.PostResponse;
+import com.blog.cutom_blog.enums.ECategory;
 import com.blog.cutom_blog.models.Post;
 import com.blog.cutom_blog.models.User;
-import com.blog.cutom_blog.repositories.CategoryRepository;
 import com.blog.cutom_blog.repositories.PostRepository;
-import com.blog.cutom_blog.repositories.TagRepository;
 import com.blog.cutom_blog.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -25,12 +25,6 @@ public class PostService {
 
     @Autowired
     private PostRepository postRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private TagRepository tagRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -43,10 +37,10 @@ public class PostService {
         return postRepository.findByStatus(Post.PostStatus.PUBLISHED, pageable);
     }
 
-    public Page<Post> getPostsByCategory(String categoryId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
-        return postRepository.findByStatusAndCategoryId(Post.PostStatus.PUBLISHED, categoryId, pageable);
-    }
+//    public Page<Post> getPostsByCategory(ECategory category, int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
+//        return postRepository.findByStatusAndCategory(Post.PostStatus.PUBLISHED, category, pageable);
+//    }
 
 //    public Page<Post> getPostsByTag(String tagId, int page, int size) {
 //        Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
@@ -73,38 +67,28 @@ public class PostService {
 
         Post post = new Post();
         post.setTitle(postRequest.getTitle());
+        post.setSubtitle(postRequest.getSubtitle());
         post.setContent(postRequest.getContent());
         post.setExcerpt(postRequest.getExcerpt());
+        post.setMetaTitle(postRequest.getMetaTitle());
         post.setMetaDescription(postRequest.getMetaDescription());
         post.setMetaKeywords(postRequest.getMetaKeywords());
         post.setFeaturedImage(postRequest.getFeaturedImage());
         post.setAuthorId(author.getId());
+        post.setSlug(generateSlug(postRequest.getTitle()));
 
         post.setStatus(Post.PostStatus.valueOf(postRequest.getStatus().toUpperCase()));
         if (post.getStatus() == Post.PostStatus.PUBLISHED) {
             post.setPublishedAt(LocalDateTime.now());
         }
 
-        if (postRequest.getCategoryId() != null) {
-            Category category = categoryRepository.findById(postRequest.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-            post.setCategoryId(category.getId());
+        if (postRequest.getCategory() != null && !postRequest.getCategory().isEmpty()) {
+            try {
+                post.setCategory(ECategory.valueOf(postRequest.getCategory().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid category: " + postRequest.getCategory());
+            }
         }
-
-//        if (postRequest.getTags() != null && !postRequest.getTags().isEmpty()) {
-//            Set<String> tagsId = postRequest.getTags().stream().map(tagName -> {
-//                Tag tag = tagRepository.findByName(tagName)
-//                    .orElseGet(() -> {
-//                        Tag newTag = Tag.builder()
-//                            .name(tagName)
-//                            .slug(generateSlug(tagName))
-//                            .build();
-//                        return tagRepository.save(newTag);
-//                    });
-//                return tag.getId();
-//            }).collect(Collectors.toSet());
-////            post.setTagId(tagsId);
-//        }
 
         return postRepository.save(post);
     }
@@ -114,12 +98,14 @@ public class PostService {
             .orElseThrow(() -> new RuntimeException("Post not found"));
 
         post.setTitle(postRequest.getTitle());
+        post.setSubtitle(postRequest.getSubtitle());
         post.setContent(postRequest.getContent());
         post.setExcerpt(postRequest.getExcerpt());
+        post.setMetaTitle(postRequest.getMetaTitle());
         post.setMetaDescription(postRequest.getMetaDescription());
         post.setMetaKeywords(postRequest.getMetaKeywords());
         post.setFeaturedImage(postRequest.getFeaturedImage());
-
+        post.setSlug(generateSlug(postRequest.getTitle()));
 
         Post.PostStatus newStatus = Post.PostStatus.valueOf(postRequest.getStatus().toUpperCase());
         if (post.getStatus() != newStatus) {
@@ -129,26 +115,13 @@ public class PostService {
             }
         }
 
-        if (postRequest.getCategoryId() != null) {
-            Category category = categoryRepository.findById(postRequest.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
-            post.setCategoryId(category.getId());
+        if (postRequest.getCategory() != null && !postRequest.getCategory().isEmpty()) {
+            try {
+                post.setCategory(ECategory.valueOf(postRequest.getCategory().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid category: " + postRequest.getCategory());
+            }
         }
-
-//        if (postRequest.getTags() != null && !postRequest.getTags().isEmpty()) {
-//            Set<String> tagsId = postRequest.getTags().stream().map(tagName -> {
-//                Tag tag = tagRepository.findByName(tagName)
-//                    .orElseGet(() -> {
-//                        Tag newTag = Tag.builder()
-//                            .name(tagName)
-//                            .slug(generateSlug(tagName))
-//                            .build();
-//                        return tagRepository.save(newTag);
-//                    });
-//                return tag.getId();
-//            }).collect(Collectors.toSet());
-//            post.setTagId(tagsId);
-//        }
 
         return postRepository.save(post);
     }
@@ -218,10 +191,56 @@ public class PostService {
         return postRepository.countByStatus(status);
     }
 
+    public Page<Post> getPostsByStatuses(List<Post.PostStatus> statuses, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return postRepository.findByStatusIn(statuses, pageable);
+    }
+
     private String generateSlug(String title) {
         return title.toLowerCase()
             .replaceAll("[^a-zA-Z0-9\\s]", "")
             .replaceAll("\\s+", "-")
             .trim();
+    }
+
+    public PostResponse toPostResponse(Post post) {
+        User author = userRepository.findById(post.getAuthorId()).orElse(null);
+
+        PostResponse.CategoryDTO categoryDTO = null;
+        if (post.getCategory() != null) {
+            categoryDTO = PostResponse.CategoryDTO.builder()
+                .name(post.getCategory().getDisplayName())
+                .description(post.getCategory().getDescription())
+                .category(post.getCategory())
+                .build();
+        }
+
+        PostResponse.AuthorDTO authorDTO = null;
+        if (author != null) {
+            authorDTO = PostResponse.AuthorDTO.builder()
+                .id(author.getId())
+                .username(author.getUsername())
+                .firstName(author.getFirstName())
+                .lastName(author.getLastName())
+                .email(author.getEmail())
+                .build();
+        }
+
+        return PostResponse.builder()
+            .id(post.getId())
+            .title(post.getTitle())
+            .content(post.getContent())
+            .excerpt(post.getExcerpt())
+            .slug(post.getSlug())
+            .category(categoryDTO)
+            .featuredImage(post.getFeaturedImage())
+            .status(com.blog.cutom_blog.enums.EStatus.valueOf(post.getStatus().name()))
+            .author(authorDTO)
+            .viewCount(0)
+            .createdAt(post.getCreatedAt())
+            .updatedAt(post.getUpdatedAt())
+            .publishedAt(post.getPublishedAt())
+            .metaDescription(post.getMetaDescription())
+            .build();
     }
 }

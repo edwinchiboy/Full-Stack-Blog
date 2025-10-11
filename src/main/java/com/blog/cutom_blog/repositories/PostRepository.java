@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,7 +18,7 @@ public interface PostRepository extends JpaRepository<Post, String> {
 
     Page<Post> findByStatus(Post.PostStatus status, Pageable pageable);
 
-    Page<Post> findByStatusAndCategoryId(Post.PostStatus status, String categoryId, Pageable pageable);
+    // Removed: findByStatusAndCategoryId - categories are now enums
 
 //    Page<Post> findByStatusAndTagId(Post.PostStatus status, String tagId, Pageable pageable);
 
@@ -34,4 +35,6 @@ public interface PostRepository extends JpaRepository<Post, String> {
 
     @Query("SELECT COUNT(p) FROM Post p WHERE p.status = :status")
     Long countByStatus(@Param("status") Post.PostStatus status);
+
+    Page<Post> findByStatusIn(List<Post.PostStatus> statuses, Pageable pageable);
 }

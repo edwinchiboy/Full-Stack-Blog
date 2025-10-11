@@ -27,12 +27,13 @@ async function handlePostSubmit(event) {
     console.log('Auth header:', Auth.getAuthHeader());
 
     // Get form data
+    const categoryValue = form.querySelector('#category').value;
     const postData = {
         title: form.querySelector('#title').value.trim(),
         subtitle: form.querySelector('#subtitle')?.value.trim() || null,
         content: form.querySelector('#content').value.trim(),
         excerpt: form.querySelector('#excerpt').value.trim(),
-        categoryId: form.querySelector('#category').value,
+        category: categoryValue || null,
         featuredImage: form.querySelector('#featured-image')?.value.trim() || null,
         tags: form.querySelector('#tags')?.value.split(',').map(tag => tag.trim()).filter(tag => tag) || [],
         status: form.querySelector('#status').value.toUpperCase(),
@@ -40,6 +41,7 @@ async function handlePostSubmit(event) {
         metaDescription: form.querySelector('#meta-description')?.value.trim() || null
     };
 
+    console.log('Category select value:', categoryValue);
     console.log('Post data to submit:', postData);
 
     // Validate required fields
@@ -121,7 +123,8 @@ async function loadPostForEdit(postId) {
         document.querySelector('#subtitle').value = post.subtitle || '';
         document.querySelector('#content').value = post.content || '';
         document.querySelector('#excerpt').value = post.excerpt || '';
-        document.querySelector('#category').value = post.category?.id || '';
+        // post.category.category contains the enum value (e.g., "DEFI")
+        document.querySelector('#category').value = post.category?.category || '';
         document.querySelector('#featured-image').value = post.featuredImage || '';
         document.querySelector('#tags').value = post.tags?.join(', ') || '';
         document.querySelector('#status').value = post.status?.toLowerCase() || 'draft';
@@ -194,31 +197,32 @@ function handlePreview() {
  * Load categories for the category dropdown
  */
 async function loadCategories() {
-    try {
-        const response = await fetch(window.location.origin + '/api/categories');
-        if (!response.ok) throw new Error('Failed to fetch categories');
+    const categorySelect = document.querySelector('#category');
+    if (!categorySelect) return;
 
-        const categories = await response.json();
-        const categorySelect = document.querySelector('#category');
+    // Categories are now enums, hardcode them in the frontend
+    const categories = [
+        { value: 'DEFI', name: 'DeFi' },
+        { value: 'NFTS', name: 'NFTs' },
+        { value: 'BLOCKCHAIN', name: 'Blockchain' },
+        { value: 'TRADING', name: 'Trading' },
+        { value: 'SECURITY', name: 'Security' },
+        { value: 'WEB3', name: 'Web3' }
+    ];
 
-        if (categorySelect && categories.length > 0) {
-            // Keep the default "Select a category" option
-            const defaultOption = categorySelect.querySelector('option[value=""]');
-            categorySelect.innerHTML = '';
-            if (defaultOption) {
-                categorySelect.appendChild(defaultOption);
-            }
-
-            categories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category.id;
-                option.textContent = category.name;
-                categorySelect.appendChild(option);
-            });
-        }
-    } catch (error) {
-        console.error('Error loading categories:', error);
+    // Keep the default "Select a category" option
+    const defaultOption = categorySelect.querySelector('option[value=""]');
+    categorySelect.innerHTML = '';
+    if (defaultOption) {
+        categorySelect.appendChild(defaultOption);
     }
+
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category.value;
+        option.textContent = category.name;
+        categorySelect.appendChild(option);
+    });
 }
 
 // Initialize on page load

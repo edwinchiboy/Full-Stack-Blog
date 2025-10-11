@@ -2,6 +2,7 @@ package com.blog.cutom_blog.controllers;
 
 import com.blog.cutom_blog.dtos.MessageResponse;
 import com.blog.cutom_blog.dtos.PostRequest;
+import com.blog.cutom_blog.dtos.PostResponse;
 import com.blog.cutom_blog.models.Post;
 import com.blog.cutom_blog.services.PostService;
 import jakarta.validation.Valid;
@@ -11,6 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -42,14 +47,7 @@ public class PostController {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<Page<Post>> getPostsByCategory(
-        @PathVariable String categoryId,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size) {
-        Page<Post> posts = postService.getPostsByCategory(categoryId, page, size);
-        return ResponseEntity.ok(posts);
-    }
+    // Removed: getPostsByCategory - categories are now enums, filter client-side if needed
 
 //    @GetMapping("/tag/{tagId}")
 //    public ResponseEntity<Page<Post>> getPostsByTag(
@@ -124,15 +122,47 @@ public class PostController {
         return ResponseEntity.ok(post);
     }
 
+    /**
+     * Unified endpoint to get posts by multiple statuses
+     * Example: /api/posts/by-status?statuses=DRAFT,PUBLISHED&page=0&size=10
+     */
+    @GetMapping("/by-status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<PostResponse>> getPostsByStatuses(
+        @RequestParam List<String> statuses,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        Authentication authentication) {
+
+        System.out.println("=== DEBUG /api/posts/by-status ===");
+        System.out.println("Authentication: " + authentication);
+        System.out.println("Principal: " + authentication.getPrincipal());
+        System.out.println("Authorities: " + authentication.getAuthorities());
+        System.out.println("==================================");
+
+        List<Post.PostStatus> postStatuses = statuses.stream()
+            .map(status -> Post.PostStatus.valueOf(status.toUpperCase()))
+            .collect(Collectors.toList());
+
+        Page<Post> posts = postService.getPostsByStatuses(postStatuses, page, size);
+        Page<PostResponse> postResponses = posts.map(postService::toPostResponse);
+
+        return ResponseEntity.ok(postResponses);
+    }
+
+    /**
+     * Legacy endpoint for single status (kept for backward compatibility)
+     */
     @GetMapping("/status/{status}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<Post>> getPostsByStatus(
+    public ResponseEntity<Page<PostResponse>> getPostsByStatus(
         @PathVariable String status,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size) {
         Post.PostStatus postStatus = Post.PostStatus.valueOf(status.toUpperCase());
         Page<Post> posts = postService.getAllPostsByStatus(postStatus, page, size);
-        return ResponseEntity.ok(posts);
+        Page<PostResponse> postResponses = posts.map(postService::toPostResponse);
+        return ResponseEntity.ok(postResponses);
     }
 
 }

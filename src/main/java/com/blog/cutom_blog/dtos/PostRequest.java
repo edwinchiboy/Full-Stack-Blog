@@ -18,11 +18,17 @@ public class PostRequest {
     @Size(max = 200)
     private String title;
 
+    @Size(max = 300)
+    private String subtitle;
+
     @Size(max = 500)
     private String excerpt;
 
     @NotBlank
     private String content;
+
+    @Size(max = 200)
+    private String metaTitle;
 
     @Size(max = 500)
     private String metaDescription;
@@ -35,7 +41,7 @@ public class PostRequest {
 
     private String status = "DRAFT";
 
-    private String categoryId;
+    private String category;
 
     private Set<String> tags;
 }
