@@ -72,7 +72,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/subscribers/**").permitAll()
                 .requestMatchers("/api/password-reset/**").permitAll()
                 // Public GET endpoints for posts
-                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts", "/api/posts/*/", "/api/posts/slug/**", "/api/posts/search").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts", "/api/posts/*", "/api/posts/slug/**", "/api/posts/search").permitAll()
                 // Admin endpoints require role check - let @PreAuthorize handle it
                 .requestMatchers("/api/posts/**", "/api/categories/**", "/api/tags/**", "/api/dashboard/**").authenticated()
                 .requestMatchers("/api/upload/**").authenticated()

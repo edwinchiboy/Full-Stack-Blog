@@ -1,7 +1,9 @@
 package com.blog.cutom_blog.controllers;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class WebController {
@@ -27,7 +29,10 @@ public class WebController {
     }
 
     @GetMapping("/post")
-    public String post() {
+    public String post(@RequestParam(required = false) String slug, Model model) {
+        if (slug != null) {
+            model.addAttribute("slug", slug);
+        }
         return "post";
     }
 

@@ -89,7 +89,7 @@ async function loadDashboardPosts(page = 0) {
     try {
         // Use the new unified endpoint to fetch all posts by multiple statuses
         const response = await fetch(
-            `${window.location.origin}/api/posts/by-status?statuses=DRAFT,PUBLISHED,SCHEDULED&page=${page}&size=${postsPerPage}`,
+            `${window.location.origin}/api/posts/by-status?statuses=DRAFT,PUBLISHED&page=${page}&size=${postsPerPage}`,
             {
                 headers: Auth.getAuthHeader()
             }
@@ -230,7 +230,7 @@ function renderStatusBadge(status) {
     const statusMap = {
         'PUBLISHED': 'success',
         'DRAFT': 'warning',
-        'SCHEDULED': 'info'
+        'ARCHIVED': 'secondary'
     };
     const badgeClass = statusMap[status] || 'warning';
     return `<span class="badge badge--${badgeClass}">${status}</span>`;

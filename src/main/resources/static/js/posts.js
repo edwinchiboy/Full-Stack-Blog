@@ -182,7 +182,7 @@ const PostsAPI = {
 
     /**
      * Get all posts by status (Admin only)
-     * @param {string} status - PUBLISHED, DRAFT, or SCHEDULED
+     * @param {string} status - PUBLISHED, DRAFT, or ARCHIVED
      */
     async getPostsByStatus(status, page = 0, size = 10) {
         try {
@@ -217,23 +217,16 @@ const PostsAPI = {
                     console.error('Error fetching draft posts:', err);
                     return { content: [], totalElements: 0 };
                 });
-            const scheduledPromise = this.getPostsByStatus('SCHEDULED', 0, largeSize)
-                .catch(err => {
-                    console.error('Error fetching scheduled posts:', err);
-                    return { content: [], totalElements: 0 };
-                });
 
-            const [published, draft, scheduled] = await Promise.all([publishedPromise, draftPromise, scheduledPromise]);
+            const [published, draft] = await Promise.all([publishedPromise, draftPromise]);
 
             console.log('Published posts:', published.content?.length || 0);
             console.log('Draft posts:', draft.content?.length || 0);
-            console.log('Scheduled posts:', scheduled.content?.length || 0);
 
             // Combine all posts and sort by createdAt (newest first)
             const allPosts = [
                 ...(published.content || []),
-                ...(draft.content || []),
-                ...(scheduled.content || [])
+                ...(draft.content || [])
             ];
             allPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -287,7 +280,7 @@ async function loadHomepagePosts() {
             <article class="card post-card">
                 <span class="post-card__category">${post.category?.name || 'Uncategorized'}</span>
                 <h3 class="post-card__title">
-                    <a href="post.html?slug=${post.slug}">${post.title}</a>
+                    <a href="/post?slug=${post.slug}">${post.title}</a>
                 </h3>
                 <p class="post-card__excerpt">
                     ${post.excerpt || post.content.substring(0, 150) + '...'}

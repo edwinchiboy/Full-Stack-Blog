@@ -26,24 +26,25 @@ public class PostController {
     private PostService postService;
 
     @GetMapping
-    public ResponseEntity<Page<Post>> getAllPosts(
+    public ResponseEntity<Page<PostResponse>> getAllPosts(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size) {
         Page<Post> posts = postService.getAllPublishedPosts(page, size);
-        return ResponseEntity.ok(posts);
+        Page<PostResponse> postResponses = posts.map(postService::toPostResponse);
+        return ResponseEntity.ok(postResponses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable String id) {
+    public ResponseEntity<PostResponse> getPostById(@PathVariable String id) {
         return postService.getPostById(id)
-            .map(post -> ResponseEntity.ok().body(post))
+            .map(post -> ResponseEntity.ok().body(postService.toPostResponse(post)))
             .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/slug/{slug}")
-    public ResponseEntity<Post> getPostBySlug(@PathVariable String slug) {
+    public ResponseEntity<PostResponse> getPostBySlug(@PathVariable String slug) {
         return postService.getPostBySlug(slug)
-            .map(post -> ResponseEntity.ok().body(post))
+            .map(post -> ResponseEntity.ok().body(postService.toPostResponse(post)))
             .orElse(ResponseEntity.notFound().build());
     }
 
@@ -59,12 +60,13 @@ public class PostController {
 //    }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<Post>> searchPosts(
+    public ResponseEntity<Page<PostResponse>> searchPosts(
         @RequestParam String keyword,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size) {
         Page<Post> posts = postService.searchPosts(keyword, page, size);
-        return ResponseEntity.ok(posts);
+        Page<PostResponse> postResponses = posts.map(postService::toPostResponse);
+        return ResponseEntity.ok(postResponses);
     }
 
     @PostMapping

@@ -32,13 +32,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
-        // Skip JWT filter for public endpoints
-        // Public GET endpoints for posts (but not admin-only endpoints)
+        // Skip JWT filter for public endpoints ONLY
+        // Public GET endpoints for posts (but not admin-only endpoints like /by-status)
         boolean isPublicPostsEndpoint = "GET".equals(method) && (
-            path.matches("/api/posts/?") ||  // GET /api/posts
-            path.matches("/api/posts/[^/]+") ||  // GET /api/posts/{id}
+            path.equals("/api/posts") ||  // GET /api/posts
+            path.matches("/api/posts/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}") ||  // GET /api/posts/{uuid}
             path.startsWith("/api/posts/slug/") ||  // GET /api/posts/slug/{slug}
-            path.startsWith("/api/posts/category/") ||  // GET /api/posts/category/{categoryId}
             path.startsWith("/api/posts/search")  // GET /api/posts/search
         );
 
