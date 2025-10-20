@@ -69,9 +69,11 @@ function displayPost(post) {
             WEB3: 'Web3'
         };
 
+        const categoryValue = post.category?.category || post.category;
+
         articleHeader.innerHTML = `
             <div class="article-header__category">
-                <span class="post-card__category">${categoryMap[post.category] || post.category}</span>
+                <span class="post-card__category">${categoryMap[categoryValue] || categoryValue}</span>
             </div>
 
             <h1 class="article-header__title">${post.title}</h1>
@@ -156,10 +158,13 @@ async function loadRelatedPosts(category) {
         }
 
         const data = await response.json();
+        const categoryValue = category?.category || category;
+
         // Filter posts by same category and exclude current post
-        let relatedPosts = data.content.filter(post =>
-            post.category === category && post.id !== currentPostId
-        ).slice(0, 3);
+        let relatedPosts = data.content.filter(post => {
+            const postCategoryValue = post.category?.category || post.category;
+            return postCategoryValue === categoryValue && post.id !== currentPostId;
+        }).slice(0, 3);
 
         // If not enough posts with same category, add other posts
         if (relatedPosts.length < 3) {
@@ -201,11 +206,13 @@ function displayRelatedPosts(posts) {
         return;
     }
 
-    relatedGrid.innerHTML = posts.map(post => `
+    relatedGrid.innerHTML = posts.map(post => {
+        const categoryValue = post.category?.category || post.category;
+        return `
         <article class="card post-card">
             <div class="post-card__content">
                 <div class="post-card__header">
-                    <span class="post-card__category">${categoryMap[post.category] || post.category}</span>
+                    <span class="post-card__category">${categoryMap[categoryValue] || categoryValue}</span>
                     <span class="post-card__title"><a href="/post?slug=${post.slug}">${post.title}</a></span>
                 </div>
                 <p class="post-card__excerpt">
@@ -219,7 +226,8 @@ function displayRelatedPosts(posts) {
                 </div>
             </div>
         </article>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function formatTimeAgo(dateString) {

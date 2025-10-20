@@ -3,6 +3,19 @@
  * Handles fetching, displaying, and managing blog posts
  */
 
+// Helper function to get category display name
+function getCategoryDisplayName(category) {
+    const categoryMap = {
+        DEFI: 'DeFi',
+        NFTS: 'NFTs',
+        BLOCKCHAIN: 'Blockchain',
+        TRADING: 'Trading',
+        SECURITY: 'Security',
+        WEB3: 'Web3'
+    };
+    return categoryMap[category] || category;
+}
+
 const PostsAPI = {
     BASE_URL: window.location.origin + '/api/posts',
 
@@ -258,10 +271,14 @@ const PostsAPI = {
     }
 };
 
+// Current page state
+let currentPage = 0;
+const pageSize = 6;
+
 /**
  * Render posts on the homepage
  */
-async function loadHomepagePosts() {
+async function loadHomepagePosts(page = 0) {
     try {
         const postsContainer = document.querySelector('.grid--posts');
         if (!postsContainer) return;
@@ -269,7 +286,7 @@ async function loadHomepagePosts() {
         // Show loading state
         postsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-secondary);">Loading posts...</p>';
 
-        const data = await PostsAPI.getAllPosts(0, 6);
+        const data = await PostsAPI.getAllPosts(page, pageSize);
 
         if (!data.content || data.content.length === 0) {
             postsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-secondary);">No posts available yet.</p>';
@@ -278,21 +295,27 @@ async function loadHomepagePosts() {
 
         postsContainer.innerHTML = data.content.map(post => `
             <article class="card post-card">
-                <span class="post-card__category">${post.category?.name || 'Uncategorized'}</span>
-                <h3 class="post-card__title">
-                    <a href="/post?slug=${post.slug}">${post.title}</a>
-                </h3>
-                <p class="post-card__excerpt">
-                    ${post.excerpt || post.content.substring(0, 150) + '...'}
-                </p>
-                <div class="post-card__meta">
-                    <div class="post-card__author">
-                        <span>By ${post.author?.username || 'Anonymous'}</span>
+                <div class="post-card__content">
+                    <div class="post-card__header">
+                        <span class="post-card__category">${getCategoryDisplayName(post.category?.category || post.category)}</span>
+                        <span class="post-card__title"><a href="/post?slug=${post.slug}">${post.title}</a></span>
                     </div>
-                    <span class="post-card__date">${formatDate(post.publishedAt || post.createdAt)}</span>
+                    <p class="post-card__excerpt">
+                        ${post.excerpt || post.content.substring(0, 150) + '...'}
+                    </p>
+                    <div class="post-card__meta">
+                        <div class="post-card__author">
+                            <span>By ${post.author?.username || 'Anonymous'}</span>
+                        </div>
+                        <span class="post-card__date">${formatDate(post.publishedAt || post.createdAt)}</span>
+                    </div>
                 </div>
             </article>
         `).join('');
+
+        // Update pagination
+        currentPage = page;
+        renderPagination(data);
     } catch (error) {
         console.error('Error loading homepage posts:', error);
         const postsContainer = document.querySelector('.grid--posts');
@@ -300,6 +323,60 @@ async function loadHomepagePosts() {
             postsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--color-error);">Failed to load posts. Please try again later.</p>';
         }
     }
+}
+
+/**
+ * Render pagination controls
+ */
+function renderPagination(data) {
+    const paginationContainer = document.querySelector('.pagination');
+    if (!paginationContainer) return;
+
+    const { totalPages, number, first, last } = data;
+
+    if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+
+    let paginationHTML = '';
+
+    // Previous button
+    paginationHTML += `
+        <button class="pagination__button"
+                ${first ? 'disabled' : ''}
+                onclick="loadHomepagePosts(${number - 1})"
+                aria-label="Previous page">← Prev</button>
+    `;
+
+    // Page numbers
+    const maxVisiblePages = 5;
+    let startPage = Math.max(0, number - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+
+    // Adjust start if we're near the end
+    if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(0, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `
+            <button class="pagination__button ${i === number ? 'pagination__button--active' : ''}"
+                    onclick="loadHomepagePosts(${i})"
+                    aria-label="Page ${i + 1}"
+                    ${i === number ? 'aria-current="page"' : ''}>${i + 1}</button>
+        `;
+    }
+
+    // Next button
+    paginationHTML += `
+        <button class="pagination__button"
+                ${last ? 'disabled' : ''}
+                onclick="loadHomepagePosts(${number + 1})"
+                aria-label="Next page">Next →</button>
+    `;
+
+    paginationContainer.innerHTML = paginationHTML;
 }
 
 /**

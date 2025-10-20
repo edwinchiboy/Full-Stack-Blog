@@ -44,7 +44,9 @@ const DashboardAPI = {
  */
 async function loadDashboardStats() {
     try {
+        console.log('Attempting to load dashboard stats...');
         const stats = await DashboardAPI.getStats();
+        console.log('Dashboard stats loaded:', stats);
 
         // Update stat cards
         updateStatCard('totalPosts', stats.totalPosts || 0);
@@ -53,9 +55,8 @@ async function loadDashboardStats() {
         updateStatCard('totalComments', stats.totalComments || 0);
     } catch (error) {
         console.error('Error loading dashboard stats:', error);
-        if (typeof showNotification === 'function') {
-            showNotification('Failed to load dashboard statistics', 'error');
-        }
+        console.error('Error details:', error.message, error.stack);
+        // Don't show notification, stats will just stay at 0
     }
 }
 
@@ -78,8 +79,8 @@ function updateStatCard(type, value) {
     });
 }
 
-// Pagination state
-let currentPage = 0;
+// Pagination state for dashboard
+let dashboardCurrentPage = 0;
 const postsPerPage = 10;
 
 /**
@@ -87,22 +88,16 @@ const postsPerPage = 10;
  */
 async function loadDashboardPosts(page = 0) {
     try {
-        // Use the new unified endpoint to fetch all posts by multiple statuses
-        const response = await fetch(
-            `${window.location.origin}/api/posts/by-status?statuses=DRAFT,PUBLISHED&page=${page}&size=${postsPerPage}`,
-            {
-                headers: Auth.getAuthHeader()
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch posts');
-        }
-
-        const data = await response.json();
+        console.log('Attempting to load dashboard posts, page:', page);
+        // Use the PostsAPI.getAllAdminPosts method
+        const data = await PostsAPI.getAllAdminPosts(page, postsPerPage);
+        console.log('Dashboard posts loaded:', data);
 
         const tbody = document.querySelector('.table tbody');
-        if (!tbody) return;
+        if (!tbody) {
+            console.error('Table tbody not found');
+            return;
+        }
 
         if (!data.content || data.content.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--color-text-secondary);">No posts yet. Create your first post!</td></tr>';
@@ -110,10 +105,24 @@ async function loadDashboardPosts(page = 0) {
             return;
         }
 
-        tbody.innerHTML = data.content.map(post => `
+        // Category display name mapping
+        const categoryMap = {
+            DEFI: 'DeFi',
+            NFTS: 'NFTs',
+            BLOCKCHAIN: 'Blockchain',
+            TRADING: 'Trading',
+            SECURITY: 'Security',
+            WEB3: 'Web3'
+        };
+
+        tbody.innerHTML = data.content.map(post => {
+            const categoryValue = post.category?.category || post.category;
+            const categoryDisplay = categoryMap[categoryValue] || categoryValue;
+
+            return `
             <tr>
                 <td><strong>${escapeHtml(post.title)}</strong></td>
-                <td>${escapeHtml(post.category?.name || 'Uncategorized')}</td>
+                <td>${escapeHtml(categoryDisplay)}</td>
                 <td>${renderStatusBadge(post.status)}</td>
                 <td>${post.viewCount || 0}</td>
                 <td>${formatDate(post.createdAt)}</td>
@@ -124,19 +133,18 @@ async function loadDashboardPosts(page = 0) {
                     </div>
                 </td>
             </tr>
-        `).join('');
+        `;
+        }).join('');
 
         // Update current page and render pagination
-        currentPage = page;
+        dashboardCurrentPage = page;
         renderPagination(data.number, data.totalPages);
     } catch (error) {
         console.error('Error loading dashboard posts:', error);
+        console.error('Error details:', error.message, error.stack);
         const tbody = document.querySelector('.table tbody');
         if (tbody) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--color-error);">Failed to load posts. Please try again.</td></tr>';
-        }
-        if (typeof showNotification === 'function') {
-            showNotification('Failed to load posts', 'error');
         }
     }
 }
@@ -315,9 +323,33 @@ if (document.readyState === 'loading') {
 }
 
 function initDashboard() {
-    // Check if we're on the dashboard page (works with or without .html)
-    if (window.location.pathname.includes('dashboard')) {
+    console.log('initDashboard called');
+    console.log('Current pathname:', window.location.pathname);
+    console.log('Current location:', window.location.href);
+
+    // Check if we're on dashboard page
+    const isDashboardPage = document.querySelector('.dashboard-header') !== null;
+    console.log('Is dashboard page (has .dashboard-header):', isDashboardPage);
+
+    if (!isDashboardPage) {
+        console.log('Not on dashboard page, skipping');
+        return;
+    }
+
+    // Always load on dashboard page
+    console.log('Loading dashboard data...');
+    console.log('PostsAPI available:', typeof PostsAPI !== 'undefined');
+    console.log('Auth available:', typeof Auth !== 'undefined');
+
+    try {
         loadDashboardStats();
+    } catch (error) {
+        console.error('Error calling loadDashboardStats:', error);
+    }
+
+    try {
         loadDashboardPosts();
+    } catch (error) {
+        console.error('Error calling loadDashboardPosts:', error);
     }
 }

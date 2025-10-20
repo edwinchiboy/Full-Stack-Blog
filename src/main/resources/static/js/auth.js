@@ -711,16 +711,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Attach logout handlers to all logout buttons
-    const logoutButtons = document.querySelectorAll('.btn--secondary:contains("Logout"), button:contains("Logout")');
-    logoutButtons.forEach(button => {
-        if (button.textContent.includes('Logout')) {
-            button.addEventListener('click', handleLogout);
-        }
-    });
+    // Select logout button by ID and all buttons that contain "Logout" text
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
 
-    // Add click handler for logout buttons using querySelector
-    document.querySelectorAll('button').forEach(button => {
-        if (button.textContent.trim() === 'Logout') {
+    // Also add click handler for any other logout buttons
+    document.querySelectorAll('button, a').forEach(button => {
+        if (button.textContent.trim() === 'Logout' || button.textContent.includes('Logout')) {
             button.addEventListener('click', handleLogout);
         }
     });
