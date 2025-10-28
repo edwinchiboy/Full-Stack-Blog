@@ -29,10 +29,16 @@ async function loadPost() {
 
         const post = await response.json();
         currentPostId = post.id;
+        window.currentPostId = post.id; // Make postId available to comments.js
         displayPost(post);
 
-        // Load comments and related posts
-        loadComments(post.id);
+        // Set postId on comment form
+        const commentForm = document.getElementById('comment-form');
+        if (commentForm) {
+            commentForm.dataset.postId = post.id;
+        }
+
+        // Load related posts
         loadRelatedPosts(post.category);
 
     } catch (error) {
@@ -88,10 +94,18 @@ function displayPost(post) {
         `;
     }
 
-    // Update article body
+    // Display featured image if available
     const articleBody = document.querySelector('.article-body');
     if (articleBody) {
-        articleBody.innerHTML = post.content;
+        let bodyContent = '';
+
+        // Add featured image before content if it exists
+        if (post.featuredImage) {
+            bodyContent += `<img src="${post.featuredImage}" alt="${post.title}" class="article-featured-image">`;
+        }
+
+        bodyContent += post.content;
+        articleBody.innerHTML = bodyContent;
     }
 
     // Remove tags section
@@ -99,54 +113,6 @@ function displayPost(post) {
     if (tagList) {
         tagList.remove();
     }
-}
-
-async function loadComments(postId) {
-    try {
-        const response = await fetch(`/api/comments/post/${postId}`);
-
-        if (!response.ok) {
-            throw new Error('Failed to load comments');
-        }
-
-        const comments = await response.json();
-        displayComments(comments);
-
-    } catch (error) {
-        console.error('Error loading comments:', error);
-        const commentsContainer = document.querySelector('.section:has(.comment-form) > .container');
-        if (commentsContainer) {
-            const commentsList = commentsContainer.querySelector('div:last-child');
-            if (commentsList) {
-                commentsList.innerHTML = '<p style="color: var(--color-text-secondary);">No comments yet. Be the first to comment!</p>';
-            }
-        }
-    }
-}
-
-function displayComments(comments) {
-    const commentsContainer = document.querySelector('.section:has(.comment-form) > .container');
-    if (!commentsContainer) return;
-
-    const commentsList = commentsContainer.querySelector('div:last-child');
-    if (!commentsList) return;
-
-    if (comments.length === 0) {
-        commentsList.innerHTML = '<p style="color: var(--color-text-secondary);">No comments yet. Be the first to comment!</p>';
-        return;
-    }
-
-    commentsList.innerHTML = comments.map(comment => `
-        <div class="comment">
-            <div class="comment__header">
-                <div class="comment__author">
-                    <span class="comment__author-name">${comment.author?.username || 'Anonymous'}</span>
-                </div>
-                <span class="comment__date">${formatTimeAgo(comment.createdAt)}</span>
-            </div>
-            <p class="comment__body">${comment.content}</p>
-        </div>
-    `).join('');
 }
 
 async function loadRelatedPosts(category) {

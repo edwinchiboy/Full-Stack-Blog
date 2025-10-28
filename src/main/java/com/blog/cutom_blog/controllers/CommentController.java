@@ -1,66 +1,96 @@
 package com.blog.cutom_blog.controllers;
 
-
+import com.blog.cutom_blog.config.security_configuration.UserDetailsImpl;
+import com.blog.cutom_blog.dtos.ApiResponse;
 import com.blog.cutom_blog.dtos.CommentRequest;
-import com.blog.cutom_blog.dtos.MessageResponse;
-import com.blog.cutom_blog.models.Comment;
+import com.blog.cutom_blog.dtos.CommentResponse;
 import com.blog.cutom_blog.services.CommentService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@Slf4j
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/api")
+@RequiredArgsConstructor
 public class CommentController {
+    private final CommentService commentService;
 
-    @Autowired
-    private CommentService commentService;
+    @PostMapping("/posts/{postId}/comments")
+    public ResponseEntity<ApiResponse<CommentResponse>> createComment(
+            @PathVariable String postId,
+            @Valid @RequestBody CommentRequest request,
+            Authentication authentication) {
 
-    @GetMapping("/post/{postId}")
-    public ResponseEntity<Page<Comment>> getCommentsByPost(
-        @PathVariable String postId,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size) {
-        Page<Comment> comments = commentService.getCommentsByPost(postId, page, size);
-        return ResponseEntity.ok(comments);
+        log.info("POST /api/posts/{}/comments - User: {}", postId, authentication.getName());
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String userId = userDetails.getId();
+        CommentResponse comment = commentService.createComment(postId, request, userId);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.<CommentResponse>builder()
+                        .message("Comment created successfully")
+                        .data(comment)
+                        .build());
     }
 
-    @PostMapping("/post/{postId}")
-    @PreAuthorize("hasRole('READER') or hasRole('ADMIN')")
-    public ResponseEntity<Comment> createComment(@PathVariable String postId,
-                                                 @Valid @RequestBody CommentRequest commentRequest,
-                                                 Authentication authentication) {
-        Comment comment = commentService.createComment(postId, commentRequest, authentication.getName());
-        return ResponseEntity.ok(comment);
+    @GetMapping("/posts/{postId}/comments")
+    public ResponseEntity<ApiResponse<Page<CommentResponse>>> getComments(
+            @PathVariable String postId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        log.info("GET /api/posts/{}/comments - Page: {}, Size: {}", postId, page, size);
+        
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<CommentResponse> comments = commentService.getCommentsByPostId(postId, pageable);
+        
+        return ResponseEntity.ok(ApiResponse.<Page<CommentResponse>>builder()
+                .message("Comments retrieved successfully")
+                .data(comments)
+                .build());
     }
 
-    @DeleteMapping("/{commentId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteComment(@PathVariable String commentId) {
-        commentService.deleteComment(commentId);
-        return ResponseEntity.ok(new MessageResponse("Comment deleted successfully!"));
+    @PutMapping("/comments/{commentId}")
+    public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
+            @PathVariable String commentId,
+            @Valid @RequestBody CommentRequest request,
+            Authentication authentication) {
+
+        log.info("PUT /api/comments/{} - User: {}", commentId, authentication.getName());
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String userId = userDetails.getId();
+        CommentResponse comment = commentService.updateComment(commentId, request, userId);
+
+        return ResponseEntity.ok(ApiResponse.<CommentResponse>builder()
+                .message("Comment updated successfully")
+                .data(comment)
+                .build());
     }
 
-    @GetMapping("/post/{postId}/count")
-    public ResponseEntity<Long> getCommentCount(@PathVariable String postId) {
-        Long count = commentService.getCommentCountByPost(postId);
-        return ResponseEntity.ok(count);
-    }
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
+            @PathVariable String commentId,
+            Authentication authentication) {
 
-    @GetMapping("/user/{username}")
-    @PreAuthorize("hasRole('ADMIN') or authentication.name == #username")
-    public ResponseEntity<Page<Comment>> getCommentsByUser(
-        @PathVariable String username,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size) {
-        Page<Comment> comments = commentService.getCommentsByUser(username, page, size);
-        return ResponseEntity.ok(comments);
-    }
+        log.info("DELETE /api/comments/{} - User: {}", commentId, authentication.getName());
 
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String userId = userDetails.getId();
+        commentService.deleteComment(commentId, userId);
+
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .message("Comment deleted successfully")
+                .build());
+    }
 }
-

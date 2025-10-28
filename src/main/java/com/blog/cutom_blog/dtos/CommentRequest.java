@@ -15,4 +15,6 @@ public class CommentRequest {
     @NotBlank
     @Size(max = 1000)
     private String content;
+
+    private String parentCommentId;  // Optional: for reply functionality
 }

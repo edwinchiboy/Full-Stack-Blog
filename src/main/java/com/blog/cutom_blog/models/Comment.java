@@ -21,16 +21,20 @@ public class Comment extends Audit {
 
     private String postId;
 
+    private String parentCommentId;  // For reply functionality
+
     @Builder
     public Comment(final String id,
                    final String content,
                    final String authorId,
                    final String postId,
+                   final String parentCommentId,
                    final LocalDateTime createdAt,
                    final LocalDateTime updatedAt) {
         super(id, createdAt, updatedAt);
         this.content = content;
         this.authorId = authorId;
         this.postId = postId;
+        this.parentCommentId = parentCommentId;
     }
 }

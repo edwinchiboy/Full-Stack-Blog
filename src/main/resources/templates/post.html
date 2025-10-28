@@ -129,57 +129,38 @@
         <!-- Comments Section -->
         <section class="section">
             <div class="container container--narrow">
-                <h2 class="mb-2xl">Comments</h2>
+                <h2 class="mb-2xl" id="comment-count">Comments</h2>
 
                 <!-- Comment Form -->
                 <div class="comment-form mb-2xl">
                     <h3 class="mb-lg">Leave a Comment</h3>
-                    <form>
+                    <form id="comment-form" data-post-id="">
                         <div class="form-group">
                             <label for="comment" class="form-label">Your Comment</label>
-                            <textarea id="comment" class="form-textarea" placeholder="Share your thoughts..." required></textarea>
+                            <textarea id="comment" name="comment" class="form-textarea" placeholder="Share your thoughts..." required maxlength="1000"></textarea>
                         </div>
                         <button type="submit" class="btn btn--primary">Post Comment</button>
                     </form>
                 </div>
 
+                <!-- Comments Loading Indicator -->
+                <div id="comments-loading" style="display: none; text-align: center; color: var(--color-text-secondary);">
+                    <p>Loading comments...</p>
+                </div>
+
+                <!-- No Comments Message -->
+                <div id="no-comments-message" style="display: none; text-align: center; color: var(--color-text-secondary);">
+                    <p>No comments yet. Be the first to comment!</p>
+                </div>
+
                 <!-- Comments List -->
-                <div>
-                    <div class="comment">
-                        <div class="comment__header">
-                            <div class="comment__author">
-                                <span class="comment__author-name">Sarah M.</span>
-                            </div>
-                            <span class="comment__date">2 hours ago</span>
-                        </div>
-                        <p class="comment__body">
-                            Great article! Really helped me understand how liquidity pools work. The explanation of impermanent loss was particularly useful.
-                        </p>
-                    </div>
+                <div id="comments-list">
+                    <!-- Comments will be dynamically loaded here -->
+                </div>
 
-                    <div class="comment">
-                        <div class="comment__header">
-                            <div class="comment__author">
-                                <span class="comment__author-name">Mike D.</span>
-                            </div>
-                            <span class="comment__date">5 hours ago</span>
-                        </div>
-                        <p class="comment__body">
-                            I've been providing liquidity for months but never fully understood the math behind AMMs. This cleared things up!
-                        </p>
-                    </div>
-
-                    <div class="comment">
-                        <div class="comment__header">
-                            <div class="comment__author">
-                                <span class="comment__author-name">Emma R.</span>
-                            </div>
-                            <span class="comment__date">1 day ago</span>
-                        </div>
-                        <p class="comment__body">
-                            Would love to see a follow-up article on advanced strategies for minimizing impermanent loss. Perhaps covering concentrated liquidity?
-                        </p>
-                    </div>
+                <!-- Pagination -->
+                <div id="comments-pagination" style="display: none; justify-content: center; align-items: center; margin-top: 2rem;">
+                    <!-- Pagination controls will be dynamically added here -->
                 </div>
             </div>
         </section>
@@ -258,5 +239,6 @@
 
     <script src="/js/auth.js"></script>
     <script src="/js/post.js"></script>
+    <script src="/js/comments.js"></script>
 </body>
 </html>

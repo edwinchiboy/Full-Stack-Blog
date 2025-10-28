@@ -44,10 +44,10 @@
                 <h1 class="hero__title">Explore the Future of Web3</h1>
                 <p class="hero__subtitle">Deep insights into blockchain technology, DeFi protocols, NFTs, and the decentralized web</p>
 
-                <div class="search-bar">
-                    <input type="text" class="search-bar__input" placeholder="Search articles, topics, or categories..." aria-label="Search">
-                    <button class="btn btn--primary btn--small search-bar__button" type="button">Search</button>
-                </div>
+                <form class="search-bar">
+                    <input type="text" class="search-bar__input" placeholder="Search by topic..." aria-label="Search">
+                    <button class="btn btn--primary btn--small search-bar__button" type="submit">Search</button>
+                </form>
             </div>
         </div>
     </section>
@@ -57,9 +57,8 @@
         <!-- Featured Posts -->
         <section class="section" id="posts">
             <div class="container">
-                <div class="flex justify-between items-center mb-2xl">
+                <div class="mb-2xl">
                     <h2 class="mb-0">Latest Articles</h2>
-                    <a href="#" class="btn btn--ghost">View All →</a>
                 </div>
 
                 <div class="grid grid--posts">
@@ -76,18 +75,15 @@
         <!-- Popular Topics -->
         <section class="section">
             <div class="container">
-                <h2 class="text-center mb-2xl">Popular Topics</h2>
+                <h2 class="text-center mb-2xl">Filter by Categories</h2>
                 <div class="tag-list" style="justify-content: center;">
-                    <a href="#" class="tag">Bitcoin</a>
-                    <a href="#" class="tag">Ethereum</a>
-                    <a href="#" class="tag">DeFi</a>
-                    <a href="#" class="tag">NFTs</a>
-                    <a href="#" class="tag">Smart Contracts</a>
-                    <a href="#" class="tag">Staking</a>
-                    <a href="#" class="tag">Layer 2</a>
-                    <a href="#" class="tag">Web3</a>
-                    <a href="#" class="tag">DAO</a>
-                    <a href="#" class="tag">Metaverse</a>
+                    <button onclick="filterByCategory('DEFI')" class="tag" data-category="DEFI">DeFi</button>
+                    <button onclick="filterByCategory('NFTS')" class="tag" data-category="NFTS">NFTs</button>
+                    <button onclick="filterByCategory('BLOCKCHAIN')" class="tag" data-category="BLOCKCHAIN">Blockchain</button>
+                    <button onclick="filterByCategory('TRADING')" class="tag" data-category="TRADING">Trading</button>
+                    <button onclick="filterByCategory('SECURITY')" class="tag" data-category="SECURITY">Security</button>
+                    <button onclick="filterByCategory('WEB3')" class="tag" data-category="WEB3">Web3</button>
+                    <button onclick="clearCategoryFilter()" class="btn btn--ghost btn--small" style="margin-left: var(--space-md);">Show All</button>
                 </div>
             </div>
         </section>

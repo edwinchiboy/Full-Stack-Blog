@@ -339,6 +339,12 @@ strong {
     align-items: center;
 }
 
+#user-actions {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+}
+
 .header__user {
     display: flex;
     align-items: center;
@@ -939,12 +945,20 @@ strong {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-full);
     transition: all var(--transition-fast);
+    cursor: pointer;
 }
 
 .tag:hover {
     background: rgba(0, 212, 255, 0.1);
     color: var(--color-primary);
     border-color: var(--color-primary);
+}
+
+.tag.tag--active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
 }
 
 .tag-list {
@@ -989,18 +1003,18 @@ strong {
    Comments
    ============================================ */
 .comment {
-    padding: var(--space-lg);
+    padding: calc(var(--space-lg) * 0.25) calc(var(--space-lg) * 1.1) calc(var(--space-lg) * 0.0625) calc(var(--space-lg) * 1.1);
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    margin-bottom: var(--space-lg);
+    margin-bottom: calc(var(--space-lg) * 0.5);
 }
 
 .comment__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--space-md);
+    margin-bottom: calc(var(--space-md) * 0.5);
 }
 
 .comment__author {
@@ -1012,10 +1026,11 @@ strong {
 .comment__author-name {
     font-weight: var(--font-weight-semibold);
     color: var(--color-text-primary);
+    font-size: calc(var(--font-size-base) * 0.5 * 0.8);
 }
 
 .comment__date {
-    font-size: var(--font-size-xs);
+    font-size: calc(var(--font-size-base) * 0.5 * 0.8 * 2);
     color: var(--color-text-muted);
 }
 
@@ -1026,7 +1041,7 @@ strong {
 
 .comment-form {
     margin-top: var(--space-2xl);
-    padding: var(--space-xl);
+    padding: calc(var(--space-xl) * 0.8);
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
@@ -1297,37 +1312,48 @@ strong {
    ============================================ */
 .article-header {
     margin-bottom: var(--space-3xl);
-    text-align: center;
+    text-align: left;
+    padding: calc(var(--space-lg) * 1.1) calc(var(--space-lg) * 1.1) calc(var(--space-lg) * 1.1) 0;
+    overflow: hidden;
 }
 
 .article-header__category {
     margin-bottom: var(--space-md);
+    margin-top: 0;
 }
 
 .article-header__title {
     font-size: var(--font-size-4xl);
     margin-bottom: var(--space-lg);
+    margin-top: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .article-header__subtitle {
     font-size: var(--font-size-xl);
     color: var(--color-text-secondary);
     margin-bottom: var(--space-xl);
+    margin-top: 0;
 }
 
 .article-header__meta {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: var(--space-lg);
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
+    margin-bottom: 0;
 }
 
 .article-body {
     font-size: var(--font-size-lg);
     line-height: var(--line-height-relaxed);
     color: var(--color-text-secondary);
+    padding: calc(var(--space-lg) * 1.1) calc(var(--space-lg) * 1.1) calc(var(--space-lg) * 1.1) 0;
+    overflow: hidden;
+    word-wrap: break-word;
 }
 
 .article-body > * + * {
@@ -1342,4 +1368,35 @@ strong {
 .article-body h3 {
     margin-top: var(--space-2xl);
     color: var(--color-text-primary);
+}
+
+.article-body img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: var(--space-2xl) auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.article-featured-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: var(--space-2xl);
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.article-body figure {
+    margin: var(--space-2xl) 0;
+}
+
+.article-body figcaption {
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: var(--space-md);
+    font-style: italic;
 }

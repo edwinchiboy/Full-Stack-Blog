@@ -26,12 +26,16 @@ async function handlePostSubmit(event) {
     console.log('User roles:', user?.roles);
     console.log('Auth header:', Auth.getAuthHeader());
 
-    // Get form data
+    // Get form data - get content from TinyMCE if initialized
     const categoryValue = form.querySelector('#category').value;
+    const content = window.tinymce && tinymce.get('content')
+        ? tinymce.get('content').getContent()
+        : form.querySelector('#content').value.trim();
+
     const postData = {
         title: form.querySelector('#title').value.trim(),
         subtitle: form.querySelector('#subtitle')?.value.trim() || null,
-        content: form.querySelector('#content').value.trim(),
+        content: content,
         excerpt: form.querySelector('#excerpt').value.trim(),
         category: categoryValue || null,
         featuredImage: form.querySelector('#featured-image')?.value.trim() || null,
@@ -121,7 +125,14 @@ async function loadPostForEdit(postId) {
         // Fill form with post data
         document.querySelector('#title').value = post.title || '';
         document.querySelector('#subtitle').value = post.subtitle || '';
-        document.querySelector('#content').value = post.content || '';
+
+        // Set content in TinyMCE if initialized, otherwise in textarea
+        if (window.tinymce && tinymce.get('content')) {
+            tinymce.get('content').setContent(post.content || '');
+        } else {
+            document.querySelector('#content').value = post.content || '';
+        }
+
         document.querySelector('#excerpt').value = post.excerpt || '';
         // post.category.category contains the enum value (e.g., "DEFI")
         document.querySelector('#category').value = post.category?.category || '';
@@ -320,11 +331,15 @@ function initCreatePost() {
     // Load categories
     loadCategories();
 
-    // Check if editing existing post
+    // Initialize TinyMCE editor
+    initTinyMCE();
+
+    // Check if editing existing post - delay to ensure TinyMCE is loaded
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
     if (postId) {
-        loadPostForEdit(postId);
+        // Wait for TinyMCE to initialize before loading post data
+        setTimeout(() => loadPostForEdit(postId), 500);
     }
 
     // Attach form submit handler
@@ -360,4 +375,72 @@ function initCreatePost() {
             }
         });
     }
+}
+
+/**
+ * Initialize TinyMCE Rich Text Editor
+ */
+function initTinyMCE() {
+    if (!window.tinymce) {
+        console.error('TinyMCE not loaded');
+        return;
+    }
+
+    tinymce.init({
+        selector: '#content',
+        height: 500,
+        menubar: false,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image | code | help',
+        content_style: 'body { font-family:Inter,Helvetica,Arial,sans-serif; font-size:16px }',
+        skin: 'oxide-dark',
+        content_css: 'dark',
+
+        // Image upload handler
+        images_upload_handler: async function (blobInfo, progress) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+                    const token = Auth.getToken();
+                    if (!token) {
+                        reject('You must be logged in to upload images');
+                        return;
+                    }
+
+                    const response = await fetch(window.location.origin + '/api/upload/image', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        reject(error.error || 'Upload failed');
+                        return;
+                    }
+
+                    const result = await response.json();
+                    resolve(window.location.origin + result.url);
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    reject(error.message || 'Failed to upload image');
+                }
+            });
+        },
+
+        // Auto resize
+        automatic_uploads: true,
+        file_picker_types: 'image',
+
+        // Paste images
+        paste_data_images: true
+    });
 }

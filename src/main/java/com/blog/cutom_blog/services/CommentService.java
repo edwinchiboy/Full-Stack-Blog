@@ -1,65 +1,108 @@
 package com.blog.cutom_blog.services;
 
-
 import com.blog.cutom_blog.dtos.CommentRequest;
+import com.blog.cutom_blog.dtos.CommentResponse;
+import com.blog.cutom_blog.exceptions.NotFoundException;
 import com.blog.cutom_blog.models.Comment;
-import com.blog.cutom_blog.models.Post;
 import com.blog.cutom_blog.models.User;
 import com.blog.cutom_blog.repositories.CommentRepository;
-import com.blog.cutom_blog.repositories.PostRepository;
 import com.blog.cutom_blog.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class CommentService {
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private CommentRepository commentRepository;
+    @Transactional
+    public CommentResponse createComment(String postId, CommentRequest request, String userId) {
+        log.info("Creating comment for post: {} by user: {}", postId, userId);
 
-    @Autowired
-    private PostRepository postRepository;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
-    @Autowired
-    private UserRepository userRepository;
+        Comment comment = Comment.builder()
+                .content(request.getContent())
+                .authorId(userId)
+                .postId(postId)
+                .parentCommentId(request.getParentCommentId())
+                .build();
 
-    public Page<Comment> getCommentsByPost(String postId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        return commentRepository.findByPostId(postId, pageable);
+        Comment savedComment = commentRepository.save(comment);
+        log.info("Comment created successfully with id: {}", savedComment.getId());
+
+        return mapToResponse(savedComment, user.getUsername());
     }
 
-    public Comment createComment(String postId, CommentRequest commentRequest, String username) {
-        Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new RuntimeException("Post not found"));
-
-        User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Comment comment = new Comment();
-        comment.setContent(commentRequest.getContent());
-        comment.setPostId(post.getId());
-        comment.setAuthorId(user.getId());
-
-        return commentRepository.save(comment);
+    @Transactional(readOnly = true)
+    public Page<CommentResponse> getCommentsByPostId(String postId, Pageable pageable) {
+        log.info("Fetching comments for post: {}", postId);
+        
+        Page<Comment> comments = commentRepository.findByPostId(postId, pageable);
+        
+        return comments.map(comment -> {
+            String authorName = userRepository.findById(comment.getAuthorId())
+                    .map(User::getUsername)
+                    .orElse("Anonymous");
+            return mapToResponse(comment, authorName);
+        });
     }
 
-    public void deleteComment(String commentId) {
-        commentRepository.deleteById(commentId);
+    @Transactional
+    public void deleteComment(String commentId, String userId) {
+        log.info("Deleting comment: {} by user: {}", commentId, userId);
+        
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("Comment not found with id: " + commentId));
+        
+        if (!comment.getAuthorId().equals(userId)) {
+            throw new AccessDeniedException("You are not authorized to delete this comment");
+        }
+        
+        commentRepository.delete(comment);
+        log.info("Comment deleted successfully: {}", commentId);
     }
 
-    public Long getCommentCountByPost(String postId) {
-        return commentRepository.countByPostId(postId);
+    @Transactional
+    public CommentResponse updateComment(String commentId, CommentRequest request, String userId) {
+        log.info("Updating comment: {} by user: {}", commentId, userId);
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("Comment not found with id: " + commentId));
+
+        if (!comment.getAuthorId().equals(userId)) {
+            throw new AccessDeniedException("You are not authorized to update this comment");
+        }
+
+        comment.setContent(request.getContent());
+        Comment updatedComment = commentRepository.save(comment);
+        log.info("Comment updated successfully: {}", commentId);
+
+        String authorName = userRepository.findById(comment.getAuthorId())
+                .map(User::getUsername)
+                .orElse("Anonymous");
+
+        return mapToResponse(updatedComment, authorName);
     }
 
-    public Page<Comment> getCommentsByUser(String username, int page, int size) {
-        User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return commentRepository.findByAuthorId(user.getId(), pageable);
+    private CommentResponse mapToResponse(Comment comment, String authorName) {
+        return CommentResponse.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .authorId(comment.getAuthorId())
+                .authorName(authorName)
+                .postId(comment.getPostId())
+                .parentCommentId(comment.getParentCommentId())
+                .createdAt(comment.getCreatedAt())
+                .updatedAt(comment.getUpdatedAt())
+                .build();
     }
 }

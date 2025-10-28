@@ -74,7 +74,48 @@ const Auth = {
     getAuthHeader() {
         const token = this.getToken();
         return token ? { 'Authorization': `Bearer ${token}` } : {};
+    },
+
+    /**
+     * Handle expired token - logout and redirect to login
+     */
+    handleExpiredToken() {
+        console.log('Token expired, logging out...');
+        this.clearAuth();
+
+        // Show notification if available
+        if (typeof showNotification === 'function') {
+            showNotification('Your session has expired. Please login again.', 'error');
+        }
+
+        // Redirect to login after a short delay
+        setTimeout(() => {
+            window.location.href = '/login';
+        }, 1500);
     }
+};
+
+/**
+ * Global fetch wrapper to intercept 401 responses
+ */
+const originalFetch = window.fetch;
+window.fetch = function(...args) {
+    return originalFetch.apply(this, args)
+        .then(response => {
+            // Check if response is 401 Unauthorized
+            if (response.status === 401) {
+                console.log('401 Unauthorized response detected');
+                // Only handle auto-logout if user was previously authenticated
+                if (Auth.isAuthenticated()) {
+                    Auth.handleExpiredToken();
+                }
+            }
+            return response;
+        })
+        .catch(error => {
+            // Re-throw the error so it can be handled by the calling code
+            throw error;
+        });
 };
 
 /**

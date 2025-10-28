@@ -3,6 +3,64 @@
  * Handles fetching, displaying, and managing blog posts
  */
 
+// Helper function to show notification
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification--${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? 'var(--color-success, #10b981)' : type === 'error' ? 'var(--color-error, #ef4444)' : 'var(--color-primary, #3b82f6)'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 10000;
+        max-width: 400px;
+        animation: slideIn 0.3s ease-out;
+    `;
+
+    document.body.appendChild(notification);
+
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Add CSS animations if not already present
+if (!document.querySelector('#notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'notification-styles';
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 // Helper function to get category display name
 function getCategoryDisplayName(category) {
     const categoryMap = {
@@ -274,6 +332,8 @@ const PostsAPI = {
 // Current page state
 let currentPage = 0;
 const pageSize = 6;
+let currentCategory = null; // Track current category filter
+let allPosts = []; // Cache all posts for client-side filtering
 
 /**
  * Render posts on the homepage
@@ -392,6 +452,84 @@ function formatDate(dateString) {
 }
 
 /**
+ * Display search results on the current page
+ */
+async function displaySearchResults(keyword, page = 0) {
+    const postsContainer = document.querySelector('.grid--posts');
+    const headerElement = document.querySelector('.mb-2xl h2');
+
+    if (!postsContainer) return;
+
+    // Show loading state
+    postsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-secondary);">Searching...</p>';
+
+    try {
+        const data = await PostsAPI.searchPosts(keyword, page, pageSize);
+
+        // Update header to show search results
+        if (headerElement) {
+            headerElement.innerHTML = `Search Results for "${keyword}" <button onclick="clearSearch()" class="btn btn--ghost btn--small" style="margin-left: var(--space-md);">Clear Search</button>`;
+        }
+
+        if (!data.content || data.content.length === 0) {
+            postsContainer.innerHTML = `
+                <p style="grid-column: 1/-1; text-align: center; color: var(--color-text-secondary);">
+                    No posts found for "${keyword}".
+                </p>`;
+            return;
+        }
+
+        postsContainer.innerHTML = data.content.map(post => `
+            <article class="card post-card">
+                <div class="post-card__content">
+                    <div class="post-card__header">
+                        <span class="post-card__category">${getCategoryDisplayName(post.category?.category || post.category)}</span>
+                        <span class="post-card__title"><a href="/post?slug=${post.slug}">${post.title}</a></span>
+                    </div>
+                    <p class="post-card__excerpt">
+                        ${post.excerpt || post.content.substring(0, 150) + '...'}
+                    </p>
+                    <div class="post-card__meta">
+                        <div class="post-card__author">
+                            <span>By ${post.author?.username || 'Anonymous'}</span>
+                        </div>
+                        <span class="post-card__date">${formatDate(post.publishedAt || post.createdAt)}</span>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+
+        // Update pagination for search results
+        currentPage = page;
+        renderPagination(data);
+    } catch (error) {
+        console.error('Error displaying search results:', error);
+        postsContainer.innerHTML = `
+            <p style="grid-column: 1/-1; text-align: center; color: var(--color-error);">
+                Failed to search posts. Please try again.
+            </p>`;
+    }
+}
+
+/**
+ * Clear search and show all posts
+ */
+function clearSearch() {
+    const searchInput = document.querySelector('.search-bar__input');
+    const headerElement = document.querySelector('.mb-2xl h2');
+
+    if (searchInput) {
+        searchInput.value = '';
+    }
+
+    if (headerElement) {
+        headerElement.textContent = 'Latest Articles';
+    }
+
+    loadHomepagePosts(0);
+}
+
+/**
  * Handle search functionality
  */
 async function handleSearch(event) {
@@ -399,18 +537,12 @@ async function handleSearch(event) {
     const searchInput = document.querySelector('.search-bar__input');
     const keyword = searchInput?.value.trim();
 
-    if (!keyword) return;
-
-    try {
-        const data = await PostsAPI.searchPosts(keyword);
-        // Redirect to search results page or update current page
-        window.location.href = `search.html?q=${encodeURIComponent(keyword)}`;
-    } catch (error) {
-        console.error('Search error:', error);
-        if (typeof showNotification === 'function') {
-            showNotification('Search failed. Please try again.', 'error');
-        }
+    if (!keyword) {
+        clearSearch();
+        return;
     }
+
+    displaySearchResults(keyword, 0);
 }
 
 // Initialize on page load
@@ -418,6 +550,130 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initPosts);
 } else {
     initPosts();
+}
+
+/**
+ * Filter posts by category
+ */
+async function filterByCategory(category) {
+    const postsContainer = document.querySelector('.grid--posts');
+    const headerElement = document.querySelector('.mb-2xl h2');
+
+    if (!postsContainer) return;
+
+    // Set current category
+    currentCategory = category;
+
+    // Update active state on category buttons
+    document.querySelectorAll('.tag[data-category]').forEach(btn => {
+        if (btn.dataset.category === category) {
+            btn.classList.add('tag--active');
+        } else {
+            btn.classList.remove('tag--active');
+        }
+    });
+
+    // Show loading state
+    postsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-secondary);">Filtering posts...</p>';
+
+    try {
+        // Fetch all posts (with large page size to get everything)
+        const data = await PostsAPI.getAllPosts(0, 100);
+
+        if (!data.content || data.content.length === 0) {
+            postsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-secondary);">No posts available yet.</p>';
+            return;
+        }
+
+        // Filter posts by category
+        const filteredPosts = data.content.filter(post => {
+            const postCategory = post.category?.category || post.category;
+            return postCategory === category;
+        });
+
+        // Update header
+        if (headerElement) {
+            headerElement.innerHTML = `${getCategoryDisplayName(category)} Articles <button onclick="clearCategoryFilter()" class="btn btn--ghost btn--small" style="margin-left: var(--space-md);">Show All</button>`;
+        }
+
+        if (filteredPosts.length === 0) {
+            postsContainer.innerHTML = `
+                <p style="grid-column: 1/-1; text-align: center; color: var(--color-text-secondary);">
+                    No posts found in the ${getCategoryDisplayName(category)} category.
+                </p>`;
+            // Clear pagination
+            const paginationContainer = document.querySelector('.pagination');
+            if (paginationContainer) {
+                paginationContainer.innerHTML = '';
+            }
+            return;
+        }
+
+        // Display filtered posts
+        postsContainer.innerHTML = filteredPosts.map(post => `
+            <article class="card post-card">
+                <div class="post-card__content">
+                    <div class="post-card__header">
+                        <span class="post-card__category">${getCategoryDisplayName(post.category?.category || post.category)}</span>
+                        <span class="post-card__title"><a href="/post?slug=${post.slug}">${post.title}</a></span>
+                    </div>
+                    <p class="post-card__excerpt">
+                        ${post.excerpt || post.content.substring(0, 150) + '...'}
+                    </p>
+                    <div class="post-card__meta">
+                        <div class="post-card__author">
+                            <span>By ${post.author?.username || 'Anonymous'}</span>
+                        </div>
+                        <span class="post-card__date">${formatDate(post.publishedAt || post.createdAt)}</span>
+                    </div>
+                </div>
+            </article>
+        `).join('');
+
+        // Clear pagination for filtered results
+        const paginationContainer = document.querySelector('.pagination');
+        if (paginationContainer) {
+            paginationContainer.innerHTML = '';
+        }
+
+        // Show notification
+        showNotification(`Showing ${filteredPosts.length} ${getCategoryDisplayName(category)} posts`, 'success');
+
+        // Scroll to posts section
+        document.querySelector('#posts').scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+        console.error('Error filtering posts by category:', error);
+        postsContainer.innerHTML = `
+            <p style="grid-column: 1/-1; text-align: center; color: var(--color-error);">
+                Failed to filter posts. Please try again.
+                <button onclick="clearCategoryFilter()" class="btn btn--primary btn--small" style="margin-top: var(--space-md);">Show All Posts</button>
+            </p>`;
+        showNotification('Failed to filter posts', 'error');
+    }
+}
+
+/**
+ * Clear category filter and show all posts
+ */
+function clearCategoryFilter() {
+    currentCategory = null;
+    const headerElement = document.querySelector('.mb-2xl h2');
+    const searchInput = document.querySelector('.search-bar__input');
+
+    // Remove active state from all category buttons
+    document.querySelectorAll('.tag[data-category]').forEach(btn => {
+        btn.classList.remove('tag--active');
+    });
+
+    if (headerElement) {
+        headerElement.textContent = 'Latest Articles';
+    }
+
+    if (searchInput) {
+        searchInput.value = '';
+    }
+
+    loadHomepagePosts(0);
 }
 
 function initPosts() {
