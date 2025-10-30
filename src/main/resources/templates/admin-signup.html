@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Sign Up - CryptoBlog</title>
+    <meta name="description" content="Create an admin account">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="text-center mb-2xl">
+                <a href="/" class="header__logo" style="font-size: var(--font-size-3xl);">CRYPTOBLOG</a>
+            </div>
+
+            <h2 class="auth-card__title">Admin Sign Up</h2>
+            <p style="text-align: center; color: var(--color-text-secondary); margin-bottom: var(--space-xl);">
+                Create an admin account to manage the blog
+            </p>
+
+            <form>
+                <div class="form-group">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" id="firstName" class="form-input" placeholder="John" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" id="lastName" class="form-input" placeholder="Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="admin@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                    <span class="form-hint">At least 8 characters</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password" class="form-label">Confirm Password</label>
+                    <input type="password" id="confirm-password" class="form-input" placeholder="Confirm your password" required>
+                </div>
+
+                <button type="submit" class="btn btn--primary w-full mb-lg">Create Admin Account</button>
+
+                <div class="text-center">
+                    <p style="color: var(--color-text-secondary); margin-bottom: var(--space-sm);">
+                        Already have an account? <a href="/login" style="color: var(--color-primary);">Login</a>
+                    </p>
+                    <p style="color: var(--color-text-secondary);">
+                        Need a regular account? <a href="/register" style="color: var(--color-primary);">Sign up here</a>
+                    </p>
+                </div>
+            </form>
+
+            <div class="auth-card__footer">
+                <p>By signing up, you agree to our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>

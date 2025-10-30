@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - CryptoBlog</title>
+    <meta name="description" content="Learn more about CryptoBlog and our mission">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header__container">
+            <a href="/" class="header__logo">CRYPTOBLOG</a>
+
+            <nav class="nav">
+                <ul class="nav__list">
+                    <li><a href="/" class="nav__link">Home</a></li>
+                    <li><a href="/#posts" class="nav__link">Articles</a></li>
+                    <li id="dashboard-nav-item" style="display: none;"><a href="/dashboard" class="nav__link">Dashboard</a></li>
+                    <li><a href="/about" class="nav__link nav__link--active">About</a></li>
+                </ul>
+            </nav>
+
+            <div class="header__actions">
+                <div id="guest-actions">
+                    <a href="/login" class="btn btn--secondary btn--small">Login</a>
+                    <a href="/register" class="btn btn--primary btn--small">Sign Up</a>
+                </div>
+                <div id="user-actions" style="display: none;">
+                    <div class="header__user">
+                        <span id="user-display-name">Welcome, User</span>
+                    </div>
+                    <button id="logout-btn" class="btn btn--secondary btn--small">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" style="padding: var(--space-3xl) 0;">
+            <div class="container">
+                <div class="hero__content">
+                    <h1 class="hero__title">About CryptoBlog</h1>
+                    <p class="hero__subtitle">Your trusted source for Web3 insights and blockchain innovation</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Content -->
+        <section class="section">
+            <div class="container container--narrow">
+                <div class="card" style="padding: var(--space-3xl);">
+                    <h2 class="mb-xl">Our Mission</h2>
+                    <p class="mb-xl" style="line-height: 1.8; color: var(--color-text-secondary);">
+                        CryptoBlog is dedicated to providing high-quality, in-depth content about blockchain technology,
+                        decentralized finance (DeFi), NFTs, and the evolving Web3 ecosystem. We aim to educate, inform,
+                        and inspire our readers to navigate the rapidly changing world of cryptocurrency and blockchain innovation.
+                    </p>
+
+                    <h2 class="mb-xl">What We Cover</h2>
+                    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-xl); margin-bottom: var(--space-2xl);">
+                        <div>
+                            <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">DeFi</h3>
+                            <p style="color: var(--color-text-secondary);">
+                                Explore decentralized finance protocols, liquidity pools, yield farming, and the future of open finance.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">NFTs</h3>
+                            <p style="color: var(--color-text-secondary);">
+                                Discover digital ownership, NFT marketplaces, digital art, and the evolution of tokenized assets.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">Blockchain</h3>
+                            <p style="color: var(--color-text-secondary);">
+                                Learn about blockchain infrastructure, consensus mechanisms, and scaling solutions.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">Security</h3>
+                            <p style="color: var(--color-text-secondary);">
+                                Stay protected with best practices, security audits, and wallet safety tips.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">Trading</h3>
+                            <p style="color: var(--color-text-secondary);">
+                                Master crypto trading strategies, technical analysis, and risk management.
+                            </p>
+                        </div>
+                        <div>
+                            <h3 style="color: var(--color-primary); margin-bottom: var(--space-md);">Web3</h3>
+                            <p style="color: var(--color-text-secondary);">
+                                Build the decentralized web with dApp development, smart contracts, and Web3 tools.
+                            </p>
+                        </div>
+                    </div>
+
+                    <h2 class="mb-xl">Our Values</h2>
+                    <ul style="list-style: none; padding: 0; margin-bottom: var(--space-2xl);">
+                        <li style="padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border);">
+                            <strong style="color: var(--color-primary);">Accuracy:</strong>
+                            <span style="color: var(--color-text-secondary);">We prioritize factual, well-researched content</span>
+                        </li>
+                        <li style="padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border);">
+                            <strong style="color: var(--color-primary);">Accessibility:</strong>
+                            <span style="color: var(--color-text-secondary);">Making complex topics understandable for everyone</span>
+                        </li>
+                        <li style="padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border);">
+                            <strong style="color: var(--color-primary);">Innovation:</strong>
+                            <span style="color: var(--color-text-secondary);">Covering the latest trends and emerging technologies</span>
+                        </li>
+                        <li style="padding: var(--space-md) 0; border-bottom: 1px solid var(--color-border);">
+                            <strong style="color: var(--color-primary);">Community:</strong>
+                            <span style="color: var(--color-text-secondary);">Building a knowledgeable and engaged reader base</span>
+                        </li>
+                        <li style="padding: var(--space-md) 0;">
+                            <strong style="color: var(--color-primary);">Independence:</strong>
+                            <span style="color: var(--color-text-secondary);">Providing unbiased insights and analysis</span>
+                        </li>
+                    </ul>
+
+                    <h2 class="mb-xl">Join Our Community</h2>
+                    <p style="line-height: 1.8; color: var(--color-text-secondary); margin-bottom: var(--space-xl);">
+                        Stay updated with the latest articles, insights, and Web3 news by subscribing to our newsletter.
+                        Join thousands of readers who trust CryptoBlog for their blockchain and cryptocurrency education.
+                    </p>
+
+                    <div class="text-center">
+                        <a href="/#posts" class="btn btn--primary">Explore Articles</a>
+                        <a href="/register" id="create-account-btn" class="btn btn--secondary" style="margin-left: var(--space-md); display: none;">Create Account</a>
+                        <a href="/#newsletter" id="subscribe-btn" class="btn btn--secondary" style="margin-left: var(--space-md); display: none;">Subscribe</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="section">
+            <div class="container container--narrow">
+                <div class="card" style="text-align: center; background: var(--color-bg-elevated);">
+                    <h2 class="mb-lg">Get In Touch</h2>
+                    <p class="mb-xl" style="color: var(--color-text-secondary);">
+                        Have questions, suggestions, or feedback? We'd love to hear from you.
+                    </p>
+                    <p style="color: var(--color-primary); font-size: var(--font-size-lg);">
+                        <a href="mailto:choboy.edeh17@gmail.com" style="color: var(--color-primary); text-decoration: none;">
+                            choboy.edeh17@gmail.com
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <p class="footer__text">&copy; 2025 CryptoBlog. All rights reserved.</p>
+                <ul class="footer__links">
+                    <li><a href="/privacy" class="footer__link">Privacy Policy</a></li>
+                    <li><a href="/terms" class="footer__link">Terms of Service</a></li>
+                    <li><a href="/about" class="footer__link">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/auth.js"></script>
+    <script>
+        // Toggle between "Create Account" and "Subscribe" buttons based on login status
+        (function() {
+            function updateButtons() {
+                const token = localStorage.getItem('jwt_token');
+                const user = localStorage.getItem('user_data');
+                const createAccountBtn = document.getElementById('create-account-btn');
+                const subscribeBtn = document.getElementById('subscribe-btn');
+
+                if (token && user) {
+                    // User is logged in - show Subscribe button, hide Create Account
+                    if (createAccountBtn) createAccountBtn.style.display = 'none';
+                    if (subscribeBtn) subscribeBtn.style.display = 'inline-block';
+                } else {
+                    // User is not logged in - show Create Account, hide Subscribe
+                    if (createAccountBtn) createAccountBtn.style.display = 'inline-block';
+                    if (subscribeBtn) subscribeBtn.style.display = 'none';
+                }
+            }
+
+            // Wait for DOM to be ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', updateButtons);
+            } else {
+                updateButtons();
+            }
+
+            // Run again after a delay in case auth.js modifies localStorage
+            setTimeout(updateButtons, 500);
+        })();
+    </script>
+    <script src="/js/newsletter.js"></script>
+</body>
+</html>

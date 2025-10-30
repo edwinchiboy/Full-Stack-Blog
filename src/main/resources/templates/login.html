@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CryptoBlog</title>
+    <meta name="description" content="Log in to your CryptoBlog account">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="text-center mb-2xl">
+                <a href="/" class="header__logo" style="font-size: var(--font-size-3xl);">CRYPTOBLOG</a>
+            </div>
+
+            <h2 class="auth-card__title">Welcome Back</h2>
+
+            <div id="error-message" class="hidden">
+                <div class="alert alert--error mb-xl">
+                    Invalid credentials. Please try again.
+                </div>
+            </div>
+
+            <form>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        class="form-input"
+                        placeholder="your@email.com"
+                        required
+                        aria-required="true">
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-input"
+                        placeholder="Enter your password"
+                        required
+                        aria-required="true">
+                </div>
+
+                <div class="flex justify-between items-center mb-xl">
+                    <label class="flex items-center gap-sm" style="cursor: pointer;">
+                        <input type="checkbox" id="remember" style="width: auto; cursor: pointer;">
+                        <span style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Remember me</span>
+                    </label>
+                    <a href="#" style="font-size: var(--font-size-sm); color: var(--color-primary);">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn btn--primary w-full mb-lg">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="auth-card__footer">
+                <p>Don't have an account? <a href="/register">Sign up</a></p>
+                <p style="margin-top: var(--space-sm);"><a href="/">← Back to home</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>

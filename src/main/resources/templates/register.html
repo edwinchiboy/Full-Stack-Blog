@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - CryptoBlog</title>
+    <meta name="description" content="Create your CryptoBlog account">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="text-center mb-2xl">
+                <a href="/" class="header__logo" style="font-size: var(--font-size-3xl);">CRYPTOBLOG</a>
+            </div>
+
+            <h2 class="auth-card__title">Create Your Account</h2>
+
+            <form>
+                <div class="form-group">
+                    <label for="firstName" class="form-label">First Name</label>
+                    <input type="text" id="firstName" class="form-input" placeholder="Enter your first name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName" class="form-label">Last Name</label>
+                    <input type="text" id="lastName" class="form-input" placeholder="Enter your last name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Create a strong password" required>
+                    <span class="form-hint">Minimum 8 characters with letters and numbers</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password" class="form-label">Confirm Password</label>
+                    <input type="password" id="confirm-password" class="form-input" placeholder="Re-enter your password" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="flex items-center gap-sm" style="cursor: pointer;">
+                        <input type="checkbox" id="terms" required style="width: auto; cursor: pointer;">
+                        <span style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                            I agree to the <a href="/terms" style="color: var(--color-primary);">Terms</a> and <a href="/privacy" style="color: var(--color-primary);">Privacy Policy</a>
+                        </span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn--primary w-full mb-lg">Create Account</button>
+            </form>
+
+            <div class="auth-card__footer">
+                <p>Already have an account? <a href="/login">Sign in</a></p>
+                <p style="margin-top: var(--space-sm);"><a href="/">← Back to home</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+</body>
+</html>
