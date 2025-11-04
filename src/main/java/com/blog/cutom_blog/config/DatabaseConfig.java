@@ -38,8 +38,14 @@ public class DatabaseConfig {
 
         logger.info("=== DATABASE CONFIGURATION DEBUG ===");
         logger.info("DATABASE_URL exists: {}", databaseUrl != null);
+        if (databaseUrl != null && databaseUrl.length() > 30) {
+            logger.info("DATABASE_URL prefix: {}", databaseUrl.substring(0, 30) + "...");
+        }
         logger.info("PGHOST exists: {}", pgHost != null);
         logger.info("PGHOST value: {}", pgHost);
+        logger.info("PGPORT value: {}", pgPort);
+        logger.info("PGDATABASE value: {}", pgDatabase);
+        logger.info("PGUSER value: {}", pgUser);
 
         // Try to build URL from Railway's individual variables if DATABASE_URL not found
         if ((databaseUrl == null || databaseUrl.isEmpty()) && pgHost != null) {
