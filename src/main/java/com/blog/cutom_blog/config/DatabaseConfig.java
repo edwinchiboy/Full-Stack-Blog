@@ -29,6 +29,13 @@ public class DatabaseConfig {
     public DataSource dataSource() {
         String databaseUrl = System.getenv("DATABASE_URL");
 
+        logger.info("=== DATABASE CONFIGURATION DEBUG ===");
+        logger.info("DATABASE_URL exists: {}", databaseUrl != null);
+        logger.info("DATABASE_URL empty: {}", databaseUrl != null && databaseUrl.isEmpty());
+        if (databaseUrl != null && databaseUrl.length() > 20) {
+            logger.info("DATABASE_URL prefix: {}", databaseUrl.substring(0, 20));
+        }
+
         if (databaseUrl != null && !databaseUrl.isEmpty()) {
             logger.info("DATABASE_URL found, configuring datasource for production");
 
