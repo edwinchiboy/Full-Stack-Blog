@@ -29,11 +29,32 @@ public class DatabaseConfig {
     public DataSource dataSource() {
         String databaseUrl = System.getenv("DATABASE_URL");
 
+        // Railway provides individual variables too
+        String pgHost = System.getenv("PGHOST");
+        String pgPort = System.getenv("PGPORT");
+        String pgDatabase = System.getenv("PGDATABASE");
+        String pgUser = System.getenv("PGUSER");
+        String pgPassword = System.getenv("PGPASSWORD");
+
         logger.info("=== DATABASE CONFIGURATION DEBUG ===");
         logger.info("DATABASE_URL exists: {}", databaseUrl != null);
-        logger.info("DATABASE_URL empty: {}", databaseUrl != null && databaseUrl.isEmpty());
-        if (databaseUrl != null && databaseUrl.length() > 20) {
-            logger.info("DATABASE_URL prefix: {}", databaseUrl.substring(0, 20));
+        logger.info("PGHOST exists: {}", pgHost != null);
+        logger.info("PGHOST value: {}", pgHost);
+
+        // Try to build URL from Railway's individual variables if DATABASE_URL not found
+        if ((databaseUrl == null || databaseUrl.isEmpty()) && pgHost != null) {
+            logger.info("DATABASE_URL not found, building from Railway PG variables");
+            databaseUrl = String.format("jdbc:postgresql://%s:%s/%s",
+                pgHost,
+                pgPort != null ? pgPort : "5432",
+                pgDatabase != null ? pgDatabase : "railway");
+
+            logger.info("Constructed database URL from Railway variables");
+            return DataSourceBuilder.create()
+                    .url(databaseUrl)
+                    .username(pgUser)
+                    .password(pgPassword)
+                    .build();
         }
 
         if (databaseUrl != null && !databaseUrl.isEmpty()) {
@@ -58,7 +79,7 @@ public class DatabaseConfig {
         }
 
         // Fall back to application.properties configuration for local development
-        logger.info("DATABASE_URL not found, using fallback configuration from application.properties");
+        logger.info("DATABASE_URL and Railway PG variables not found, using fallback configuration from application.properties");
         logger.info("Fallback URL: {}", fallbackUrl);
 
         return DataSourceBuilder.create()
